@@ -1,0 +1,222 @@
+{# src/Views/dashboard/admin.twig #}
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #dc3545;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .admin-badge {
+        background: #dc3545;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Bienvenue, {{ user.name }} <span class="admin-badge ms-2">ADMIN</span></p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-danger">
+                <i class="fas fa-cog me-2"></i>Paramètres système
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.total_users }}</div>
+                <div class="stat-label">Utilisateurs totaux</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.new_users_today }}</div>
+                <div class="stat-label">Nouveaux aujourd'hui</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.active_jobs }}</div>
+                <div class="stat-label">Offres actives</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.total_applications }}</div>
+                <div class="stat-label">Candidatures totales</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deuxième ligne stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.recruiters }}</div>
+                <div class="stat-label">Recruteurs</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.candidates }}</div>
+                <div class="stat-label">Candidats</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.admins }}</div>
+                <div class="stat-label">Administrateurs</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.suspended_users }}</div>
+                <div class="stat-label">Utilisateurs suspendus</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="row">
+        <!-- Actions rapides -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Actions rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/admin/users" class="btn btn-outline-danger">
+                            <i class="fas fa-users me-2"></i>Gérer les utilisateurs
+                        </a>
+                        <a href="/admin/reports" class="btn btn-outline-danger">
+                            <i class="fas fa-chart-bar me-2"></i>Voir les rapports
+                        </a>
+                        <a href="/admin/system" class="btn btn-outline-danger">
+                            <i class="fas fa-server me-2"></i>Configuration système
+                        </a>
+                        <a href="/admin/job-moderation" class="btn btn-outline-danger">
+                            <i class="fas fa-check-circle me-2"></i>Modérer les offres
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activités récentes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Activités récentes</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_activities|length > 0 %}
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ activity.user }}</strong>
+                                    <span class="text-muted ms-2">{{ activity.action }}</span>
+                                </div>
+                                <small class="text-muted">{{ activity.time }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Aucune activité récente</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations système -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>État du système</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <div class="bg-success rounded-circle p-2">
+                                        <i class="fas fa-check text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Statut</h6>
+                                    <p class="text-success mb-0">{{ platform_stats.system_status }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <div class="bg-info rounded-circle p-2">
+                                        <i class="fas fa-chart-line text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Croissance</h6>
+                                    <p class="text-info mb-0">{{ platform_stats.monthly_growth }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <div class="bg-primary rounded-circle p-2">
+                                        <i class="fas fa-users text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Sessions actives</h6>
+                                    <p class="text-primary mb-0">{{ platform_stats.active_sessions }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

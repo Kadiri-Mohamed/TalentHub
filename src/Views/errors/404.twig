@@ -1,0 +1,17 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="error-code display-1 text-danger">404</div>
+    <h1 class="mb-4">Page non trouvée</h1>
+    <p class="lead mb-4">
+        La page que vous recherchez semble avoir été déplacée ou n'existe pas.
+    </p>
+    {% if error_message %}
+    <p class="text-muted">{{ error_message }}</p>
+    {% endif %}
+    <a href="/" class="btn btn-primary btn-lg">Retour à l'accueil</a>
+</div>
+{% endblock %}

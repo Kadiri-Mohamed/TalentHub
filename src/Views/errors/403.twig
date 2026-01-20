@@ -1,0 +1,26 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="error-code display-1 text-warning">403</div>
+    <h1 class="mb-4">Accès interdit</h1>
+    <p class="lead mb-4">
+        Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+    </p>
+    {% if error_message %}
+    <p class="text-muted">{{ error_message }}</p>
+    {% endif %}
+    <div class="d-flex gap-3 justify-content-center">
+        {% if session.get('logged_in') %}
+            <a href="/{{ session.get('role_name') }}/dashboard" class="btn btn-primary">
+                Tableau de bord
+            </a>
+        {% else %}
+            <a href="/logout" class="btn btn-primary">Se connecter</a>
+        {% endif %}
+        <a href="/" class="btn btn-outline-primary">Accueil</a>
+    </div>
+</div>
+{% endblock %}

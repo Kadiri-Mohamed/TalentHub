@@ -1,0 +1,23 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="error-code display-1 text-danger">500</div>
+    <h1 class="mb-4">Erreur serveur</h1>
+    <p class="lead mb-4">
+        Une erreur s'est produite lors du traitement de votre requête.
+        Notre équipe technique a été notifiée.
+    </p>
+    {% if error_message %}
+    <div class="alert alert-warning text-start">
+        <strong>Détails :</strong> {{ error_message }}
+    </div>
+    {% endif %}
+    <div class="d-flex gap-3 justify-content-center">
+        <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+        <button onclick="location.reload()" class="btn btn-outline-primary">Réessayer</button>
+    </div>
+</div>
+{% endblock %}  
