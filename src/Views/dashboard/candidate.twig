@@ -1,0 +1,108 @@
+{# src/Views/dashboard/candidate.twig #}
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #4a6cf7;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Bienvenue, {{ user.name }} 👋</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nouvelle candidature
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.applications }}</div>
+                <div class="stat-label">Candidatures</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.interviews }}</div>
+                <div class="stat-label">Entretiens</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.offers }}</div>
+                <div class="stat-label">Offres</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ stats.saved_jobs }}</div>
+                <div class="stat-label">Offres sauvegardées</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/candidate/job-search" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i>Rechercher des emplois
+                        </a>
+                        <a href="/candidate/applications" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i>Voir mes candidatures
+                        </a>
+                        <a href="/candidate/profile" class="btn btn-outline-primary">
+                            <i class="fas fa-user-edit me-2"></i>Compléter mon profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Dernières activités</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-0">Aucune activité récente.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
