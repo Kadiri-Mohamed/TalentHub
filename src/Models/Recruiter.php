@@ -1,5 +1,5 @@
 <?php
-namespace Src\Models;
+namespace App\Models;
 use App\Models\Role;
 use App\Models\User;
 
