@@ -4,7 +4,7 @@ use App\Models\Categorie;
 use App\Models\Recruiter;
 
 
-class Offers
+class Offer
 {
     private int $id;
     private string $title;
