@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-class tag{
+class Tag{
      private int $id;
     private string $name;
 
@@ -20,7 +20,7 @@ class tag{
         return $this->name;
     }
 
-     public function setId(string $id): void{
+     public function setId(int $id): void{
         $this->id = $id;
     }
      public function setName(string $name): void{
