@@ -1,13 +1,25 @@
 <?php
+namespace App\Repositories;
+use PDO;
+use Exception;
 abstract class BaseRepository
 {
-    protected PDO $db;
+    protected static PDO $db;
     protected string $table;
 
     public function __construct(PDO $db)
     {
-        $this->db = $db;
+        if (!isset(self::$db)) {
+            throw new Exception("Database not set. Call BaseRepository::setDB() first.");
+        }
     }
+
+
+     public static function setDB(PDO $pdo): void
+    {
+        self::$db = $pdo;
+    }
+
 
     public function insert(array $data): bool
     {
@@ -60,7 +72,6 @@ abstract class BaseRepository
 
         return $result ?: null;
     }
-
 
 
 }
