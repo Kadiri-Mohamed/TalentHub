@@ -29,7 +29,7 @@ class UserRepository extends BaseRepository
             return null;
         }
         
-        $role = $this->roleRepository->findById((int) $data['role_id']);
+        $role = $this->roleRepository->getById((int) $data['role_id']);
 
         return new User(
             (int)$data['id'],
@@ -62,7 +62,7 @@ class UserRepository extends BaseRepository
             return null;
         }
 
-        $role = $this->roleRepository->findById((int) $data['role_id']);
+        $role = $this->roleRepository->getById((int) $data['role_id']);
 
         return new User(
             (int)$data['id'],
@@ -80,7 +80,7 @@ class UserRepository extends BaseRepository
         $users = [];
 
         foreach ($rows as $row) {
-            $role = $this->roleRepository->findById((int) $row['role_id']);
+            $role = $this->roleRepository->getById((int) $row['role_id']);
             
             $users[] = new User(
                 (int)$row['id'],
