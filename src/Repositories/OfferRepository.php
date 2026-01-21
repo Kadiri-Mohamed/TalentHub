@@ -3,6 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Offer;
+use App\Repositories\BaseRepository;
+use App\Repositories\CategorieRepository;
+use App\Repositories\RecruiterRepository;
 use App\Models\Recruiter;
 use App\Models\Categorie;
 
@@ -10,13 +13,13 @@ class OfferRepository extends BaseRepository
 {
     protected string $table = 'offers';
     private RecruiterRepository $recruiterRepository;
-    private CategoryRepository $categoryRepository;
+    private CategorieRepository $categoryRepository;
 
     public function __construct()
     {
         parent::__construct(self::$db);
         $this->recruiterRepository = new RecruiterRepository();
-        $this->categoryRepository = new CategoryRepository();
+        $this->categoryRepository = new CategorieRepository();
     }
 
     /**
