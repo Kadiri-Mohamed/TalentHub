@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Recruiter;
 use App\Repositories\BaseRepository;
+use app\Repositories\UserRepository;
 use PDO;
 
 class RecruiterRepository extends BaseRepository
