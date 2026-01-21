@@ -27,21 +27,21 @@ abstract class BaseRepository
         $fields = implode(',', $columns);
         $values = ':' . implode(',:', $columns);
         $sql = "INSERT INTO {$this->table} ($fields) VALUES ($values)";
-        $stmt = $this->db->prepare($sql);
+        $stmt = self::$db->prepare($sql);
 
         return $stmt->execute($data);
     }
 
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id = :id");
+        $stmt = self::$db->prepare("DELETE FROM {$this->table} WHERE id = :id");
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
 
     public function findAll(): array
     {
-        $stmt = $this->db->query("SELECT * FROM {$this->table}");
+        $stmt = self::$db->query("SELECT * FROM {$this->table}");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -55,7 +55,7 @@ abstract class BaseRepository
 
         $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE id = :id";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = self::$db->prepare($sql);
 
         $data['id'] = $id;
 
@@ -65,7 +65,7 @@ abstract class BaseRepository
     public function findById(int $id): ?array
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
+        $stmt = self::$db->prepare($sql);
         $stmt->execute(['id' => $id]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
