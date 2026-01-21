@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Tag;
+use App\Repositories\BaseRepository;
+use PDO;
 
 class TagRepository extends BaseRepository
 {
