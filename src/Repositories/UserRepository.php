@@ -3,32 +3,25 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use App\Config\Database;
+use App\Models\Role;
 use PDO;
 
-class UserRepository
+class UserRepository extends BaseRepository
 {
-    private PDO $db;
+    protected string $table = 'users';
     private RoleRepository $roleRepository;
 
     public function __construct()
     {
-        $this->db = Database::getConnection();
-        $this->roleRepository = new RoleRepository(); 
+        parent::__construct(self::$db);
+        $this->roleRepository = new RoleRepository();
     }
 
-    /**
-     * Find user by email
-     */
     public function findByEmail(string $email): ?User
     {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM users WHERE email = :email LIMIT 1"
-        );
-
-        $stmt->execute([
-            'email' => $email
-        ]);
+        $sql = "SELECT * FROM {$this->table} WHERE email = :email LIMIT 1";
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute(['email' => $email]);
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -39,29 +32,21 @@ class UserRepository
         $role = $this->roleRepository->findById((int) $data['role_id']);
 
         return new User(
-            $data['id'],
+            (int)$data['id'],
             $data['name'],
             $data['email'],
             $data['password'],
-            $role 
+            $role
         );
     }
 
-    /**
-     * Create new user
-     */
-    public function create(array $data): bool
+    public function createUser(array $data): bool
     {
-        $stmt = $this->db->prepare(
-            "INSERT INTO users (name, email, password, role_id)
-             VALUES (:name, :email, :password, :role_id)"
-        );
-
-        $roleId = $data['role']  
-            ? $data['role']->getId() 
+        $roleId = isset($data['role']) && $data['role'] instanceof Role
+            ? $data['role']->getId()
             : $data['role_id'];
 
-        return $stmt->execute([
+        return $this->insert([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
@@ -69,20 +54,9 @@ class UserRepository
         ]);
     }
 
-    /**
-     * Find user by ID
-     */
-    public function findById(int $id): ?User
+    public function getById(int $id): ?User
     {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM users WHERE id = :id LIMIT 1"
-        );
-
-        $stmt->execute([
-            'id' => $id
-        ]);
-
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = parent::findById($id);
 
         if (!$data) {
             return null;
@@ -91,11 +65,51 @@ class UserRepository
         $role = $this->roleRepository->findById((int) $data['role_id']);
 
         return new User(
-            $data['id'],
+            (int)$data['id'],
             $data['name'],
             $data['email'],
             $data['password'],
-            $role  
+            $role
         );
     }
+
+
+    public function getAll(): array
+    {
+        $rows = parent::findAll();
+        $users = [];
+
+        foreach ($rows as $row) {
+            $role = $this->roleRepository->findById((int) $row['role_id']);
+            
+            $users[] = new User(
+                (int)$row['id'],
+                $row['name'],
+                $row['email'],
+                $row['password'],
+                $role
+            );
+        }
+
+        return $users;
+    }
+
+    public function updateUser(User $user): bool
+    {
+        return parent::update(
+            $user->getId(),
+            [
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+                'password' => $user->getPassword(),
+                'role_id' => $user->getRole()->getId()
+            ]
+        );
+    }
+
+    public function deleteUser(int $id): bool
+    {
+        return parent::delete($id);
+    }
+   
 }
