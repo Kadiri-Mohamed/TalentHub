@@ -1,62 +1,81 @@
 <?php
-
 namespace App\Repositories;
 
 use App\Models\Role;
-use App\Config\Database;
-use PDO;
 
-class RoleRepository
+class RoleRepository extends BaseRepository
 {
-    private PDO $db;
+    protected string $table = 'roles';
 
     public function __construct()
     {
-        $this->db = Database::getConnection();
+        parent::__construct(self::$db);
     }
 
-    public function findById(int $id): ?Role
+    public function create(Role $role): bool
     {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM roles WHERE id = :id"
-        );
-        $stmt->execute(['id' => $id]);
+        return $this->insert([
+            'name' => $role->getName()
+        ]);
+    }
 
-        $role = $stmt->fetch(PDO::FETCH_ASSOC);
+    public function getAll(): array
+    {
+        $rows = parent::findAll();
+        $roles = [];
 
-        if (!$role) {
+        foreach ($rows as $row) {
+            $roles[] = new Role(
+                (int)$row['id'],
+                $row['name']
+            );
+        }
+
+        return $roles;
+    }
+
+    public function getById(int $id): ?Role
+    {
+        $row = parent::findById($id);
+
+        if (!$row) {
             return null;
         }
 
-        return new Role($role['id'], $role['name']);
+        return new Role(
+            (int)$row['id'],
+            $row['name']
+        );
+    }
+
+    public function updateRole(Role $role): bool
+    {
+        return parent::update(
+            $role->getId(),
+            ['name' => $role->getName()]
+        );
+    }
+
+    public function deleteRole(int $id): bool
+    {
+        return parent::delete($id);
     }
 
     public function findByName(string $name): ?Role
     {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM roles WHERE name = :name"
-        );
+        $sql = "SELECT * FROM {$this->table} WHERE name = :name";
+        $stmt = self::$db->prepare($sql);
         $stmt->execute(['name' => $name]);
 
-        $role = $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$role) {
+        if (!$row) {
             return null;
         }
 
-        return new Role($role['id'], $role['name']);
-    }
-
-    public function findAll(): array{
-        $stmt = $this->db->prepare(
-            "SELECT * FROM roles"
+        return new Role(
+            (int)$row['id'],
+            $row['name']
         );
-        $stmt->execute();
-
-        $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map(function($role) {
-            return new Role($role['id'], $role['name']);
-        }, $roles);
     }
 }
