@@ -25,27 +25,27 @@ class CandidateRepository extends BaseRepository
         $sql = "SELECT * FROM {$this->table} WHERE user_id = :user_id";
         $stmt = self::$db->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
-        
+
         $candidateData = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if (!$candidateData) {
             return null;
         }
-        
+
         $user = $this->userRepository->getById($userId);
-        
+
         if (!$user) {
             return null;
         }
-        
+
         return new Candidate(
             $user->getId(),
             $user->getName(),
             $user->getEmail(),
             $user->getPassword(),
             $user->getRole(),
-            (float)$candidateData['salary_min'],
-            (float)$candidateData['salary_max'],
+            (float) $candidateData['salary_min'],
+            (float) $candidateData['salary_max'],
             $candidateData['cv_path'] ?? '',
         );
     }
@@ -53,7 +53,7 @@ class CandidateRepository extends BaseRepository
     public function createCandidate(array $data): bool
     {
         $this->db->beginTransaction();
-        
+
         try {
             $userData = [
                 'name' => $data['name'],
@@ -61,28 +61,28 @@ class CandidateRepository extends BaseRepository
                 'password' => $data['password'],
                 'role_id' => $this->getCandidateRoleId()
             ];
-            
+
             $userCreated = $this->userRepository->createUser($userData);
-            
+
             if (!$userCreated) {
                 throw new \Exception("Failed to create user");
             }
-            
+
             $userId = $this->db->lastInsertId();
-            
+
             $columns = ['user_id', 'salary_min', 'salary_max', 'cv_path'];
             $fields = implode(',', $columns);
             $values = ':' . implode(',:', $columns);
             $sql = "INSERT INTO {$this->table} ($fields) VALUES ($values)";
             $stmt = $this->db->prepare($sql);
-            
+
             $result = $stmt->execute([
                 'user_id' => $userId,
                 'salary_min' => $data['salary_min'] ?? 0,
                 'salary_max' => $data['salary_max'] ?? 0,
                 'cv_path' => $data['cv_path'] ?? ''
             ]);
-            
+
             $this->db->commit();
             return $result;
         } catch (\Exception $e) {
@@ -94,21 +94,21 @@ class CandidateRepository extends BaseRepository
     public function updateCandidate(Candidate $candidate): bool
     {
         $this->db->beginTransaction();
-        
+
         try {
             $userUpdated = $this->userRepository->updateUser($candidate);
-            
+
             if (!$userUpdated) {
                 throw new \Exception("Failed to update user");
             }
-            
+
             $data = [
                 'salary_min' => $candidate->getSalaryMin(),
                 'salary_max' => $candidate->getSalaryMax(),
                 'cv_path' => $candidate->getCvPath(),
-                'user_id' => $candidate->getId() 
+                'user_id' => $candidate->getId()
             ];
-            
+
             $fields = [];
             foreach ($data as $column => $value) {
                 if ($column !== 'user_id') {
@@ -119,7 +119,7 @@ class CandidateRepository extends BaseRepository
             $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE user_id = :user_id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute($data);
-            
+
             $this->db->commit();
             return true;
         } catch (\Exception $e) {
@@ -131,18 +131,18 @@ class CandidateRepository extends BaseRepository
     public function deleteCandidate(int $userId): bool
     {
         $this->db->beginTransaction();
-        
+
         try {
             $sql = "DELETE FROM {$this->table} WHERE user_id = :user_id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['user_id' => $userId]);
-            
+
             $userDeleted = $this->userRepository->deleteUser($userId);
-            
+
             if (!$userDeleted) {
                 throw new \Exception("Failed to delete user");
             }
-            
+
             $this->db->commit();
             return true;
         } catch (\Exception $e) {
@@ -156,12 +156,12 @@ class CandidateRepository extends BaseRepository
         $sql = "SELECT * FROM {$this->table}";
         $stmt = self::$db->query($sql);
         $candidateRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $candidates = [];
-        
+
         foreach ($candidateRows as $row) {
-            $user = $this->userRepository->getById((int)$row['user_id']);
-            
+            $user = $this->userRepository->getById((int) $row['user_id']);
+
             if ($user) {
                 $candidates[] = new Candidate(
                     $user->getId(),
@@ -169,24 +169,24 @@ class CandidateRepository extends BaseRepository
                     $user->getEmail(),
                     $user->getPassword(),
                     $user->getRole(),
-                    (float)$row['salary_min'],
-                    (float)$row['salary_max'],
+                    (float) $row['salary_min'],
+                    (float) $row['salary_max'],
                     $row['cv_path'] ?? ''
                 );
             }
         }
-        
+
         return $candidates;
     }
 
     public function findByEmail(string $email): ?Candidate
     {
         $user = $this->userRepository->findByEmail($email);
-        
+
         if (!$user) {
             return null;
         }
-        
+
         return $this->getById($user->getId());
     }
 
@@ -197,8 +197,8 @@ class CandidateRepository extends BaseRepository
         $stmt = self::$db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $result ? (int)$result['id'] : 2; 
+
+        return $result ? (int) $result['id'] : 2;
     }
 
     public function updateCvPath(int $candidateId, string $cvPath): bool
@@ -228,19 +228,19 @@ class CandidateRepository extends BaseRepository
         $sql = "SELECT c.* FROM {$this->table} c 
                 WHERE c.salary_min <= :max_salary 
                 AND c.salary_max >= :min_salary";
-        
+
         $stmt = self::$db->prepare($sql);
         $stmt->execute([
             'min_salary' => $minSalary,
             'max_salary' => $maxSalary
         ]);
-        
+
         $candidateRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $candidates = [];
-        
+
         foreach ($candidateRows as $row) {
-            $user = $this->userRepository->getById((int)$row['user_id']);
-            
+            $user = $this->userRepository->getById((int) $row['user_id']);
+
             if ($user) {
                 $candidates[] = new Candidate(
                     $user->getId(),
@@ -248,13 +248,13 @@ class CandidateRepository extends BaseRepository
                     $user->getEmail(),
                     $user->getPassword(),
                     $user->getRole(),
-                    (float)$row['salary_min'],
-                    (float)$row['salary_max'],
+                    (float) $row['salary_min'],
+                    (float) $row['salary_max'],
                     $row['cv_path'] ?? ''
                 );
             }
         }
-        
+
         return $candidates;
     }
 
@@ -263,7 +263,7 @@ class CandidateRepository extends BaseRepository
         $sql = "SELECT COUNT(*) FROM {$this->table} WHERE user_id = :user_id";
         $stmt = self::$db->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
-        
+
         return $stmt->fetchColumn() > 0;
     }
 
@@ -272,7 +272,7 @@ class CandidateRepository extends BaseRepository
         $sql = "SELECT * FROM {$this->table} WHERE user_id = :user_id";
         $stmt = self::$db->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
-        
+
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
     }
@@ -280,15 +280,15 @@ class CandidateRepository extends BaseRepository
     public function convertToCandidate(int $userId, array $candidateData = []): bool
     {
         $user = $this->userRepository->getById($userId);
-        
+
         if (!$user) {
             return false;
         }
-        
+
         if ($this->hasCandidateProfile($userId)) {
             return false;
         }
-        
+
         return $this->insert([
             'user_id' => $userId,
             'salary_min' => $candidateData['salary_min'] ?? 0,
@@ -298,21 +298,40 @@ class CandidateRepository extends BaseRepository
     }
     public function getAllCandidateUsers(): array
     {
-        $roleId = $this->getCandidateRoleId();
-        $sql = "SELECT id FROM users WHERE role_id = :role_id";
+        $sql = "SELECT 
+                u.id, 
+                u.name, 
+                u.email, 
+                u.password, 
+                u.role_id,
+                r.name as role_name,
+                c.salary_min, 
+                c.salary_max, 
+                c.cv_path
+            FROM users u
+            LEFT JOIN candidates c ON u.id = c.user_id
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE r.name = 'candidate' OR u.role_id = :role_id";
+
         $stmt = self::$db->prepare($sql);
-        $stmt->execute(['role_id' => $roleId]);
-        
-        $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt->execute(['role_id' => $this->getCandidateRoleId()]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $candidates = [];
-        
-        foreach ($userIds as $userId) {
-            $candidate = $this->getById((int)$userId);
-            if ($candidate) {
-                $candidates[] = $candidate;
-            }
+
+        foreach ($rows as $row) {
+            $candidates[] = new Candidate(
+                (int) $row['id'],
+                $row['name'],
+                $row['email'],
+                $row['password'],
+                new Role((int) $row['role_id'], $row['role_name']),
+                (float) $row['salary_min'],
+                (float) $row['salary_max'],
+                $row['cv_path'] ?? ''
+            );
         }
-        
+
         return $candidates;
     }
 }
