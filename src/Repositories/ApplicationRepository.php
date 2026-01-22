@@ -3,6 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Application;
+use App\Repositories\BaseRepository;
+use App\Repositories\OfferRepository;
+use App\Repositories\CandidateRepository;
 use App\Models\Offer;
 use App\Models\Candidate;
 
