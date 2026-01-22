@@ -16,7 +16,6 @@ class CandidateRepository extends BaseRepository
 
     public function __construct()
     {
-        parent::__construct(self::$db);
         $this->userRepository = new UserRepository();
     }
 
@@ -52,7 +51,7 @@ class CandidateRepository extends BaseRepository
 
     public function createCandidate(array $data): bool
     {
-        $this->db->beginTransaction();
+        self::$db->beginTransaction();
 
         try {
             $userData = [
@@ -68,13 +67,13 @@ class CandidateRepository extends BaseRepository
                 throw new \Exception("Failed to create user");
             }
 
-            $userId = $this->db->lastInsertId();
+            $userId = self::$db->lastInsertId();
 
             $columns = ['user_id', 'salary_min', 'salary_max', 'cv_path'];
             $fields = implode(',', $columns);
             $values = ':' . implode(',:', $columns);
             $sql = "INSERT INTO {$this->table} ($fields) VALUES ($values)";
-            $stmt = $this->db->prepare($sql);
+            $stmt = self::$db->prepare($sql);
 
             $result = $stmt->execute([
                 'user_id' => $userId,
@@ -83,17 +82,17 @@ class CandidateRepository extends BaseRepository
                 'cv_path' => $data['cv_path'] ?? ''
             ]);
 
-            $this->db->commit();
+            self::$db->commit();
             return $result;
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            self::$db->rollBack();
             return false;
         }
     }
 
     public function updateCandidate(Candidate $candidate): bool
     {
-        $this->db->beginTransaction();
+        self::$db->beginTransaction();
 
         try {
             $userUpdated = $this->userRepository->updateUser($candidate);
@@ -117,24 +116,24 @@ class CandidateRepository extends BaseRepository
             }
 
             $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE user_id = :user_id";
-            $stmt = $this->db->prepare($sql);
+            $stmt = self::$db->prepare($sql);
             $stmt->execute($data);
 
-            $this->db->commit();
+            self::$db->commit();
             return true;
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            self::$db->rollBack();
             return false;
         }
     }
 
     public function deleteCandidate(int $userId): bool
     {
-        $this->db->beginTransaction();
+        self::$db->beginTransaction();
 
         try {
             $sql = "DELETE FROM {$this->table} WHERE user_id = :user_id";
-            $stmt = $this->db->prepare($sql);
+            $stmt = self::$db->prepare($sql);
             $stmt->execute(['user_id' => $userId]);
 
             $userDeleted = $this->userRepository->deleteUser($userId);
@@ -143,10 +142,10 @@ class CandidateRepository extends BaseRepository
                 throw new \Exception("Failed to delete user");
             }
 
-            $this->db->commit();
+            self::$db->commit();
             return true;
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            self::$db->rollBack();
             return false;
         }
     }
@@ -189,7 +188,6 @@ class CandidateRepository extends BaseRepository
 
         return $this->getById($user->getId());
     }
-
 
     private function getCandidateRoleId(): int
     {
@@ -296,6 +294,7 @@ class CandidateRepository extends BaseRepository
             'cv_path' => $candidateData['cv_path'] ?? ''
         ]);
     }
+
     public function getAllCandidateUsers(): array
     {
         $sql = "SELECT 
