@@ -206,5 +206,16 @@ class AdminService
         return false;
     }
 
+     public function getStats(): array
+    {
+        return [
+            'users' => count($this->getAllUsers()),
+            'candidates' => count($this->getAllCandidates()),
+            'recruiters' => count($this->getAllRecruiters()),
+            'offers' => count($this->getAllOffers()),
+            'applications' => count($this->getAllApplications()),
+        ];
+    }
+
 
 }
