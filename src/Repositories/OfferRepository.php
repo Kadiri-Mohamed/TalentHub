@@ -36,7 +36,7 @@ class OfferRepository extends BaseRepository
             'location' => $offer->getLocation(),
             'job_type' => $offer->getJobType(),
             'recruiter_id' => $offer->getRecruiter()->getId(),
-            'categorie_id' => $offer->getCategorie()->getId()
+            'category_id' => $offer->getCategorie()->getId()
         ]);
     }
 
@@ -50,13 +50,13 @@ class OfferRepository extends BaseRepository
 
         foreach ($rows as $row) {
             $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-            $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+            $category = $this->categoryRepository->getById((int) $row['category_id']);
             
             $offers[] = new Offer(
                 (int)$row['id'],
                 $row['title'],
                 $row['description'],
-                (bool)$row['is_archived'],
+                (bool)$row['is_archived'] ? true : false,
                 (float)$row['salary_min'],
                 (float)$row['salary_max'],
                 $row['location'],
@@ -81,13 +81,13 @@ class OfferRepository extends BaseRepository
         }
 
         $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-        $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+        $category = $this->categoryRepository->getById((int) $row['category_id']);
 
         return new Offer(
             (int)$row['id'],
             $row['title'],
             $row['description'],
-            (bool)$row['is_archived'],
+            (bool)$row['is_archived'] ? true : false,
             (float)$row['salary_min'],
             (float)$row['salary_max'],
             $row['location'],
@@ -113,7 +113,7 @@ class OfferRepository extends BaseRepository
                 'location' => $offer->getLocation(),
                 'job_type' => $offer->getJobType(),
                 'recruiter_id' => $offer->getRecruiter()->getId(),
-                'categorie_id' => $offer->getCategorie()->getId()
+                'category_id' => $offer->getCategorie()->getId()
             ]
         );
     }
@@ -140,13 +140,13 @@ class OfferRepository extends BaseRepository
 
         foreach ($rows as $row) {
             $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-            $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+            $category = $this->categoryRepository->getById((int) $row['category_id']);
             
             $offers[] = new Offer(
                 (int)$row['id'],
                 $row['title'],
                 $row['description'],
-                (bool)$row['is_archived'],
+                (bool)$row['is_archived'] ? true : false,
                 (float)$row['salary_min'],
                 (float)$row['salary_max'],
                 $row['location'],
@@ -164,22 +164,22 @@ class OfferRepository extends BaseRepository
      */
     public function findByCategory(int $categoryId): array
     {
-        $sql = "SELECT * FROM {$this->table} WHERE categorie_id = :categorie_id";
+        $sql = "SELECT * FROM {$this->table} WHERE category_id = :category_id";
         $stmt = self::$db->prepare($sql);
-        $stmt->execute(['categorie_id' => $categoryId]);
+        $stmt->execute(['category_id' => $categoryId]);
 
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $offers = [];
 
         foreach ($rows as $row) {
             $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-            $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+            $category = $this->categoryRepository->getById((int) $row['category_id']);
             
             $offers[] = new Offer(
                 (int)$row['id'],
                 $row['title'],
                 $row['description'],
-                (bool)$row['is_archived'],
+                (bool)$row['is_archived'] ? true : false,
                 (float)$row['salary_min'],
                 (float)$row['salary_max'],
                 $row['location'],
@@ -205,13 +205,13 @@ class OfferRepository extends BaseRepository
 
         foreach ($rows as $row) {
             $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-            $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+            $category = $this->categoryRepository->getById((int) $row['category_id']);
             
             $offers[] = new Offer(
                 (int)$row['id'],
                 $row['title'],
                 $row['description'],
-                (bool)$row['is_archived'],
+                (bool)$row['is_archived'] ? true : false,
                 (float)$row['salary_min'],
                 (float)$row['salary_max'],
                 $row['location'],
@@ -254,13 +254,13 @@ class OfferRepository extends BaseRepository
 
         foreach ($rows as $row) {
             $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-            $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+            $category = $this->categoryRepository->getById((int) $row['category_id']);
             
             $offers[] = new Offer(
                 (int)$row['id'],
                 $row['title'],
                 $row['description'],
-                (bool)$row['is_archived'],
+                (bool)$row['is_archived'] ? true : false,
                 (float)$row['salary_min'],
                 (float)$row['salary_max'],
                 $row['location'],
@@ -287,13 +287,13 @@ class OfferRepository extends BaseRepository
 
         foreach ($rows as $row) {
             $recruiter = $this->recruiterRepository->getById((int) $row['recruiter_id']);
-            $category = $this->categoryRepository->getById((int) $row['categorie_id']);
+            $category = $this->categoryRepository->getById((int) $row['category_id']);
             
             $offers[] = new Offer(
                 (int)$row['id'],
                 $row['title'],
                 $row['description'],
-                (bool)$row['is_archived'],
+                (bool)$row['is_archived'] ? true : false,
                 (float)$row['salary_min'],
                 (float)$row['salary_max'],
                 $row['location'],
