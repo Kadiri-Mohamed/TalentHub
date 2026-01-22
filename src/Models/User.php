@@ -64,4 +64,8 @@ class User
     {
         return $role->getName() === $roleName;
     }
+
+    public function setRole(Role $role): void{
+        $this->role = $role;
+    }
 }
