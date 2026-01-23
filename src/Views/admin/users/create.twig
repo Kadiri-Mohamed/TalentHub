@@ -1,0 +1,43 @@
+{% extends 'layouts/base.twig' %}
+{% block title %}Créer un utilisateur{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Créer un utilisateur</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/admin/users/store">
+            <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mot de passe</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Rôle</label>
+                <select name="role" class="form-select">
+                    <option value="admin">Admin</option>
+                    <option value="recruiter">Recruteur</option>
+                    <option value="candidate">Candidat</option>
+                </select>
+            </div>
+
+            <div class="text-end">
+                <a href="/admin/users" class="btn btn-secondary">Annuler</a>
+                <button class="btn btn-danger">
+                    <i class="fas fa-save me-2"></i>Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

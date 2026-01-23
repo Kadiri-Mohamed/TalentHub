@@ -7,6 +7,7 @@ use App\Controllers\Auth\LogoutController;
 use App\Controllers\CandidateController;
 use App\Controllers\RecruiterController;
 use App\Controllers\Admin\AdminController;
+use App\Controllers\Admin\UserController;
 
 // Routes publiques (invités seulement)
 Router::get('/login', [LoginController::class, 'index']);
@@ -44,11 +45,22 @@ Router::get('/recruiter/create-job', [RecruiterController::class, 'createJob']);
 Router::get('/recruiter/analytics', [RecruiterController::class, 'analytics']);
 
 // Routes Admin
+// Dans src/Routes/web.php ou votre fichier de routes
 Router::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-Router::get('/admin/users', [AdminController::class, 'users']);
 Router::get('/admin/system', [AdminController::class, 'system']);
 Router::get('/admin/reports', [AdminController::class, 'reports']);
 Router::get('/admin/settings', [AdminController::class, 'settings']);
+
+// Routes pour la gestion des utilisateurs
+Router::get('/admin/users', [UserController::class, 'index']);
+Router::get('/admin/users/create', [UserController::class, 'create']);
+Router::post('/admin/users/store', [UserController::class, 'store']);
+Router::get('/admin/users/{id}', [UserController::class, 'show']);
+Router::get('/admin/users/{id}/edit', [UserController::class, 'edit']);
+Router::post('/admin/users/{id}/update', [UserController::class, 'update']);
+Router::get('/admin/users/{id}/delete', [UserController::class, 'delete']);
+Router::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+Router::get('/admin/users/search', [UserController::class, 'search']);
 
 /* Dispatch router */
 Router::dispatch();

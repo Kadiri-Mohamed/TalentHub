@@ -1,0 +1,38 @@
+{% extends 'layouts/base.twig' %}
+{% block title %}Modifier l'utilisateur{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Modifier l'utilisateur</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/admin/users/{{ user.id }}/update">
+            <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" name="name" class="form-control" value="{{ user.name }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ user.email }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Rôle</label>
+                <select name="role" class="form-select">
+                    <option value="admin" {{ user.role == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="recruiter" {{ user.role == 'recruiter' ? 'selected' : '' }}>Recruteur</option>
+                    <option value="candidate" {{ user.role == 'candidate' ? 'selected' : '' }}>Candidat</option>
+                </select>
+            </div>
+
+            <div class="text-end">
+                <a href="/admin/users" class="btn btn-secondary">Retour</a>
+                <button class="btn btn-danger">
+                    <i class="fas fa-save me-2"></i>Mettre à jour
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

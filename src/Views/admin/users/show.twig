@@ -1,0 +1,26 @@
+{% extends 'layouts/base.twig' %}
+{% block title %}Détails utilisateur{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Détails de l'utilisateur</h1>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>ID :</strong> {{ user.id }}</p>
+        <p><strong>Nom :</strong> {{ user.name }}</p>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>Rôle :</strong> {{ user.role }}</p>
+        <p>
+            <strong>Statut :</strong>
+            {% if user.active %}
+                <span class="badge bg-success">Actif</span>
+            {% else %}
+                <span class="badge bg-secondary">Suspendu</span>
+            {% endif %}
+        </p>
+
+        <a href="/admin/users" class="btn btn-secondary">Retour</a>
+        <a href="/admin/users/{{ user.id }}/edit" class="btn btn-warning">Modifier</a>
+    </div>
+</div>
+{% endblock %}
