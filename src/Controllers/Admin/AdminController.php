@@ -21,18 +21,14 @@ class AdminController
     public function dashboard()
     {
         // Récupérer les statistiques de l'administrateur
+        $stats = $this->adminService->getStats();
         Twig::display('dashboard/admin.twig', [
             'title' => 'Tableau de bord Administrateur',
             'user' => [
                 'name' => Session::get('user_name') ?? 'Admin',
                 'email' => Session::get('user_email') ?? 'admin@talenthub.com',
             ],
-            'stats' => [
-                'total_users' => 1250,
-                'new_users_today' => 42,
-                'active_jobs' => 189,
-                'total_applications' => 2547,
-            ],
+            'stats' => $stats,
         ]);
     }
 
