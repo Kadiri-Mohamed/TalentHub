@@ -1,0 +1,92 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">{{ title }}</h1>
+        <a href="/candidate/job-search" class="btn btn-primary">
+            <i class="fas fa-search me-2"></i>Postuler à une offre
+        </a>
+    </div>
+
+    {% if applications is empty %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Vous n'avez aucune candidature pour le moment.
+        </div>
+    {% else %}
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Offre</th>
+                            <th>Recruteur</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>CV</th>
+                            <th>Lettre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                            <tr>
+                                <td class="fw-semibold">
+                                    {{ app.getOffer().getTitle() }}
+                                </td>
+
+                                <td>
+                                    {{ app.getOffer().getRecruiter().getName() }}
+                                </td>
+
+                                <td>
+                                    {% set status = app.getStatus() %}
+                                    <span class="badge
+                                        {% if status == 'pending' %}bg-warning
+                                        {% elseif status == 'accepted' %}bg-success
+                                        {% elseif status == 'rejected' %}bg-danger
+                                        {% else %}bg-secondary
+                                        {% endif %}
+                                    ">
+                                        {{ status|capitalize }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ app.getCreatedAt()|date('d/m/Y') }}
+                                </td>
+
+                                <td>
+                                    {% if app.getCvPath() %}
+                                        <a href="{{ app.getCvPath() }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if app.getCoverLetter() %}
+                                        <a href="{{ app.getCoverLetter() }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-file-alt"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    {% endif %}
+</div>
+{% endblock %}
