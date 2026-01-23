@@ -26,7 +26,7 @@ class Categorie {
         $this->id = $id;
     }
     
-    public function setName(int $name ){
+    public function setName(string $name ){
         $this->name = $name;
     }
 
