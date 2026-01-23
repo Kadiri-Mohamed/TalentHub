@@ -9,7 +9,12 @@
         <p><strong>ID :</strong> {{ user.id }}</p>
         <p><strong>Nom :</strong> {{ user.name }}</p>
         <p><strong>Email :</strong> {{ user.email }}</p>
-        <p><strong>Rôle :</strong> {{ user.role }}</p>
+        <p>
+            <strong>Rôle :</strong>
+            <span class="badge bg-info">
+                {{ user.role ? user.role.name : 'Aucun rôle' }}
+            </span>
+        </p>
         <p>
             <strong>Statut :</strong>
             {% if user.active %}
