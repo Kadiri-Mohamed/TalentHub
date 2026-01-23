@@ -10,7 +10,7 @@ use App\Controllers\Recruiter\RecruiterController;
 use App\Controllers\Recruiter\OfferController;
 use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
-use App\Controllers\Candidate\OfferController;
+use App\Controllers\Candidate\OfferControllerrr;
 use App\Controllers\Candidate\ProfileController;
 use App\Controllers\Admin\OfferControllerr;
 
