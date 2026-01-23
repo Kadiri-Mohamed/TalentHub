@@ -7,6 +7,7 @@ use App\Controllers\Auth\LogoutController;
 use App\Controllers\Candidate\CandidateController;
 use App\Controllers\Candidate\ApplicationController;
 use App\Controllers\Recruiter\RecruiterController;
+use App\Controllers\Recruiter\OfferController;
 use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
 use App\Controllers\Candidate\OfferController;
@@ -52,8 +53,10 @@ Router::post('/candidate/profile/upload-cv', [ProfileController::class, 'uploadC
 Router::get('/recruiter/dashboard', [RecruiterController::class, 'dashboard']);
 Router::get('/recruiter/job-postings', [RecruiterController::class, 'jobPostings']);
 Router::get('/recruiter/candidates', [RecruiterController::class, 'candidates']);
-Router::get('/recruiter/create-job', [RecruiterController::class, 'createJob']);
+Router::get('/recruiter/create-job', [RecruiterController::class, 'createOfferForm']);
 Router::get('/recruiter/analytics', [RecruiterController::class, 'analytics']);
+
+
 
 // Routes Admin
 // Dans src/Routes/web.php ou votre fichier de routes

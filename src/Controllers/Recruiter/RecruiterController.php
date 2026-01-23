@@ -97,7 +97,6 @@ class RecruiterController
             'category_id' => intval($_POST['category_id'] ?? 0)
         ];
         
-        // Validation
         $errors = $this->validateOfferData($offerData);
         
         if (!empty($errors)) {
