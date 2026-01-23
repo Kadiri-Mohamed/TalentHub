@@ -1,0 +1,25 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Modifier mon profil</h1>
+    
+    <form action="/candidate/profile/update" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom</label>
+            <input type="text" name="name" id="name" value="{{ candidate.getName() }}" class="form-control" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" value="{{ candidate.getEmail() }}" class="form-control" required>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="/candidate/profile" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

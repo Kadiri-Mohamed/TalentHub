@@ -10,6 +10,7 @@ use App\Controllers\Recruiter\RecruiterController;
 use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
 use App\Controllers\Candidate\OfferController;
+use App\Controllers\Candidate\ProfileController;
 
 
 // Routes publiques (invités seulement)
@@ -36,12 +37,15 @@ Router::get('/', function() {
 // Routes Candidat
 Router::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
 Router::get('/candidate/applications', [ApplicationController::class,'index']);
-Router::get('/candidate/profile', [CandidateController::class, 'profile']);
 Router::get('/candidate/saved-jobs', [CandidateController::class, 'savedJobs']);
 Router::get('/candidate/interviews', [CandidateController::class, 'interviews']);
 Router::get('/candidate/offers', [OfferController::class, 'index']);
 Router::get('/candidate/offers/{id}', [OfferController::class, 'show']);
 Router::post('/candidate/offers/{id}/apply', [OfferController::class, 'apply']);
+Router::get('/candidate/profile', [ProfileController::class, 'index']);
+Router::get('/candidate/profile/edit', [ProfileController::class, 'edit']);
+Router::post('/candidate/profile/update', [ProfileController::class, 'update']);
+Router::post('/candidate/profile/upload-cv', [ProfileController::class, 'uploadCv']);
 
 // Routes Recruteur
 Router::get('/recruiter/dashboard', [RecruiterController::class, 'dashboard']);
