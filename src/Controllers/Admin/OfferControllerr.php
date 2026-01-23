@@ -14,7 +14,7 @@ use App\Models\Categorie;
 use App\Core\Twig;
 use App\Core\Session;
 
-class OfferController
+class OfferControllerr
 {
     private AdminService $adminService;
     private OfferService $offerService;

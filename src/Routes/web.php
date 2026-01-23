@@ -11,6 +11,7 @@ use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
 use App\Controllers\Candidate\OfferController;
 use App\Controllers\Candidate\ProfileController;
+use App\Controllers\Admin\OfferControllerr;
 
 
 // Routes publiques (invités seulement)
@@ -73,16 +74,16 @@ Router::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleSt
 Router::get('/admin/users/search', [UserController::class, 'search']);
 
 // Routes pour la gestion des offres
-Router::get('/admin/offers', [OfferController::class, 'index']);
-Router::get('/admin/offers/create', [OfferController::class, 'create']);
-Router::post('/admin/offers/store', [OfferController::class, 'store']);
-Router::get('/admin/offers/{id}/applications', [OfferController::class, 'applications']);
-Router::get('/admin/offers/{id}', [OfferController::class, 'show']);
-Router::get('/admin/offers/{id}/edit', [OfferController::class, 'edit']);
-Router::post('/admin/offers/{id}/update', [OfferController::class, 'update']);
-Router::get('/admin/offers/{id}/delete', [OfferController::class, 'delete']);
-Router::get('/admin/offers/{id}/toggle-archive', [OfferController::class, 'toggleArchive']);
-Router::get('/admin/offers/search', [OfferController::class, 'search']);
+Router::get('/admin/offers', [OfferControllerr::class, 'index']);
+Router::get('/admin/offers/create', [OfferControllerr::class, 'create']);
+Router::post('/admin/offers/store', [OfferControllerr::class, 'store']);
+Router::get('/admin/offers/{id}/applications', [OfferControllerr::class, 'applications']);
+Router::get('/admin/offers/{id}', [OfferControllerr::class, 'show']);
+Router::get('/admin/offers/{id}/edit', [OfferControllerr::class, 'edit']);
+Router::post('/admin/offers/{id}/update', [OfferControllerr::class, 'update']);
+Router::get('/admin/offers/{id}/delete', [OfferControllerr::class, 'delete']);
+Router::get('/admin/offers/{id}/toggle-archive', [OfferControllerr::class, 'toggleArchive']);
+Router::get('/admin/offers/search', [OfferControllerr::class, 'search']);
 
 /* Dispatch router */
 Router::dispatch();
