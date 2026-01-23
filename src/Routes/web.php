@@ -9,6 +9,8 @@ use App\Controllers\Candidate\ApplicationController;
 use App\Controllers\Recruiter\RecruiterController;
 use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
+use App\Controllers\Candidate\OfferController;
+
 
 // Routes publiques (invités seulement)
 Router::get('/login', [LoginController::class, 'index']);
@@ -37,6 +39,9 @@ Router::get('/candidate/applications', [ApplicationController::class,'index']);
 Router::get('/candidate/profile', [CandidateController::class, 'profile']);
 Router::get('/candidate/saved-jobs', [CandidateController::class, 'savedJobs']);
 Router::get('/candidate/interviews', [CandidateController::class, 'interviews']);
+Router::get('/candidate/offers', [OfferController::class, 'index']);
+Router::get('/candidate/offers/{id}', [OfferController::class, 'show']);
+Router::post('/candidate/offers/{id}/apply', [OfferController::class, 'apply']);
 
 // Routes Recruteur
 Router::get('/recruiter/dashboard', [RecruiterController::class, 'dashboard']);

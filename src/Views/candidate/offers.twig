@@ -1,0 +1,59 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">{{ title }}</h1>
+    </div>
+
+    {% if offers is empty %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Aucune offre disponible pour le moment.
+        </div>
+    {% else %}
+
+        <div class="row">
+            {% for offer in offers %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title mb-1">
+                                {{ offer.getTitle() }}
+                            </h5>
+
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-building me-1"></i>
+                                {{ offer.getRecruiter().getName() }}
+                            </p>
+
+                            <p class="card-text text-muted small mb-3">
+                                {{ offer.getDescription()|slice(0, 120) }}{% if offer.getDescription()|length > 120 %}...{% endif %}
+                            </p>
+
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <a href="/candidate/offers/{{ offer.getId() }}" class="btn btn-outline-primary btn-sm">
+                                    Voir l’offre
+                                </a>
+
+                                {% if offer.isArchived() %}
+                                    <span class="badge bg-secondary">Archivée</span>
+                                {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% endif %}
+</div>
+{% endblock %}
