@@ -32,13 +32,6 @@ class AdminController
         ]);
     }
 
-    public function users()
-    {
-        Twig::display('admin/users.twig', [
-            'title' => 'Gestion des utilisateurs',
-        ]);
-    }
-
     public function system()
     {
         Twig::display('admin/system.twig', [
