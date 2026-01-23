@@ -1,7 +1,7 @@
 <?php
 // src/Controllers/RegisterController.php
 
-namespace App\Controllers;
+namespace App\Controllers\Auth;
 
 use App\Repositories\UserRepository;
 use App\Repositories\RoleRepository;
@@ -69,7 +69,7 @@ class RegisterController
             return;
         }
 
-        $this->userRepository->create([
+        $this->userRepository->createUser([
             'name'     => $name,
             'email'    => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
