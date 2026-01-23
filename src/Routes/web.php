@@ -5,7 +5,7 @@ use App\Controllers\Auth\LoginController;
 use App\Controllers\Auth\RegisterController;
 use App\Controllers\Auth\LogoutController;
 use App\Controllers\CandidateController;
-use App\Controllers\RecruiterController;
+use App\Controllers\Recruiter\RecruiterController;
 use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
 

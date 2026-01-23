@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Repositories\RecruiterRepository;
@@ -48,7 +49,7 @@ class RecruiterService
     {
         $recruiter = $this->recruiterRepository->getById($offerData['recruiter_id']);
         $category = $this->categorieRepository->getById($offerData['category_id']);
-        
+
         if (!$recruiter || !$category) {
             return false;
         }
@@ -72,7 +73,7 @@ class RecruiterService
     public function updateOffer(int $offerId, array $offerData): bool
     {
         $offer = $this->offerRepository->getById($offerId);
-        
+
         if (!$offer) {
             return false;
         }
@@ -97,7 +98,7 @@ class RecruiterService
     public function deleteOffer(int $offerId): bool
     {
         $offer = $this->offerRepository->getById($offerId);
-        
+
         if (!$offer) {
             return false;
         }
@@ -108,7 +109,7 @@ class RecruiterService
     public function archiveOffer(int $offerId): bool
     {
         $offer = $this->offerRepository->getById($offerId);
-        
+
         if (!$offer) {
             return false;
         }
@@ -119,7 +120,7 @@ class RecruiterService
     public function unarchiveOffer(int $offerId): bool
     {
         $offer = $this->offerRepository->getById($offerId);
-        
+
         if (!$offer) {
             return false;
         }
@@ -130,7 +131,7 @@ class RecruiterService
     public function updateApplicationStatus(int $applicationId, string $status): bool
     {
         $application = $this->applicationRepository->getById($applicationId);
-        
+
         if (!$application) {
             return false;
         }
@@ -141,21 +142,49 @@ class RecruiterService
 
     public function getRecruiterStats(int $recruiterId): array
     {
-        $offers = $this->getRecruiterOffers($recruiterId);
+        $offers = $this->offerRepository->findByRecruiter($recruiterId);
+
+        $activeOffers = 0;
+        $archivedOffers = 0;
         $totalApplications = 0;
-        
+        $newApplications = 0;
+        $hiredCandidates = 0;
+
+        $today = new \DateTime();
+
         foreach ($offers as $offer) {
-            $applications = $this->getOfferApplications($offer->getId());
+            if ($offer->isArchived()) {
+                $archivedOffers++;
+            } else {
+                $activeOffers++;
+            }
+
+            $applications = $this->applicationRepository->findByOffer($offer->getId());
             $totalApplications += count($applications);
+
+            foreach ($applications as $app) {
+                $createdAt = new \DateTime($app->getAppliedAt());
+                $interval = $today->diff($createdAt)->days;
+                if ($interval <= 7) {
+                    $newApplications++;
+                }
+
+                if ($app->getStatus() === 'hired') {
+                    $hiredCandidates++;
+                }
+            }
         }
 
         return [
-            'total_offers' => count($offers),
-            'active_offers' => count(array_filter($offers, fn($offer) => !$offer->isArchived())),
-            'archived_offers' => count(array_filter($offers, fn($offer) => $offer->isArchived())),
-            'total_applications' => $totalApplications
+            'active_offers'       => $activeOffers,
+            'archived_offers'     => $archivedOffers,
+            'total_offers'        => count($offers),
+            'total_applications'  => $totalApplications,
+            'new_applications'    => $newApplications,
+            'hired_candidates'    => $hiredCandidates
         ];
     }
+
 
     public function getRecruiterByEmail(string $email): ?Recruiter
     {
@@ -165,14 +194,14 @@ class RecruiterService
     public function searchOffers(int $recruiterId, string $keyword): array
     {
         $offers = $this->getRecruiterOffers($recruiterId);
-        
+
         if (empty($keyword)) {
             return $offers;
         }
 
-        return array_filter($offers, function($offer) use ($keyword) {
-            return stripos($offer->getTitle(), $keyword) !== false || 
-                   stripos($offer->getDescription(), $keyword) !== false;
+        return array_filter($offers, function ($offer) use ($keyword) {
+            return stripos($offer->getTitle(), $keyword) !== false ||
+                stripos($offer->getDescription(), $keyword) !== false;
         });
     }
 }
