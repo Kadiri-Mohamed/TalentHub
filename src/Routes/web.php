@@ -6,6 +6,7 @@ use App\Controllers\Auth\RegisterController;
 use App\Controllers\Auth\LogoutController;
 use App\Controllers\CandidateController;
 use App\Controllers\Recruiter\RecruiterController;
+use App\Controllers\Recruiter\OfferController;
 use App\Controllers\Admin\AdminController;
 
 // Routes publiques (invités seulement)
@@ -40,8 +41,10 @@ Router::get('/candidate/interviews', [CandidateController::class, 'interviews'])
 Router::get('/recruiter/dashboard', [RecruiterController::class, 'dashboard']);
 Router::get('/recruiter/job-postings', [RecruiterController::class, 'jobPostings']);
 Router::get('/recruiter/candidates', [RecruiterController::class, 'candidates']);
-Router::get('/recruiter/create-job', [RecruiterController::class, 'createJob']);
+Router::get('/recruiter/create-job', [RecruiterController::class, 'createOfferForm']);
 Router::get('/recruiter/analytics', [RecruiterController::class, 'analytics']);
+
+
 
 // Routes Admin
 Router::get('/admin/dashboard', [AdminController::class, 'dashboard']);
