@@ -1,0 +1,456 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .applications-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: white;
+        margin-bottom: 20px;
+    }
+    .applications-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .applications-body {
+        padding: 20px;
+    }
+    .application-item {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: white;
+        transition: all 0.2s;
+    }
+    .application-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
+    }
+    .application-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    .candidate-info {
+        display: flex;
+        align-items: center;
+    }
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 12px;
+    }
+    .badge-status {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-pending { background: #ffc107; color: #212529; }
+    .badge-reviewed { background: #0dcaf0; color: white; }
+    .badge-accepted { background: #198754; color: white; }
+    .badge-rejected { background: #dc3545; color: white; }
+    .application-message {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 6px;
+        margin: 10px 0;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    .application-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #f8f9fa;
+    }
+    .application-actions .btn {
+        padding: 3px 10px;
+        font-size: 12px;
+    }
+    .stats-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #dc3545;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/offers">Offers</a></li>
+            <li class="breadcrumb-item"><a href="/admin/offers/{{ offer.id }}">{{ offer.title|slice(0, 30) }}{% if offer.title|length > 30 %}...{% endif %}</a></li>
+            <li class="breadcrumb-item active">Candidatures</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Gérez les candidatures pour cette offre</p>
+        </div>
+        <div class="btn-group">
+            <a href="/admin/offers/{{ offer.id }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour à l'offre
+            </a>
+            <a href="/admin/offers/{{ offer.id }}/export" class="btn btn-outline-success">
+                <i class="fas fa-download me-2"></i>Exporter
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if session.success %}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            {{ session.success }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+    
+    {% if session.error %}
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            {{ session.error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    <!-- Offer Info -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="card-title mb-1">{{ offer.title }}</h5>
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <span class="badge bg-{% if offer.isArchived() %}secondary{% else %}success{% endif %}">
+                            {% if offer.isArchived() %}Archivée{% else %}Active{% endif %}
+                        </span>
+                        <span class="badge bg-primary">{{ offer.jobType }}</span>
+                        <span class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ offer.location }}
+                        </span>
+                        <span class="text-muted">
+                            <i class="fas fa-money-bill-wave me-1"></i>
+                            {{ offer.salaryMin|number_format(0, ',', ' ') }} - {{ offer.salaryMax|number_format(0, ',', ' ') }} €
+                        </span>
+                    </div>
+                    <p class="card-text text-muted mb-0">
+                        <i class="fas fa-user-tie me-1"></i>
+                        {{ offer.recruiter.companyName|default(offer.recruiter.name) }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="h4 mb-0 text-danger">{{ applications|length }}</div>
+                    <small class="text-muted">Candidatures reçues</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stat-number">
+                    {% set pending_apps = applications|filter(a => a.status == 'pending')|length %}
+                    {{ pending_apps }}
+                </div>
+                <div class="stat-label">En attente</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stat-number">
+                    {% set reviewed_apps = applications|filter(a => a.status == 'reviewed')|length %}
+                    {{ reviewed_apps }}
+                </div>
+                <div class="stat-label">En revue</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stat-number">
+                    {% set accepted_apps = applications|filter(a => a.status == 'accepted')|length %}
+                    {{ accepted_apps }}
+                </div>
+                <div class="stat-label">Acceptées</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stat-number">
+                    {% set rejected_apps = applications|filter(a => a.status == 'rejected')|length %}
+                    {{ rejected_apps }}
+                </div>
+                <div class="stat-label">Rejetées</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications List -->
+    <div class="applications-card">
+        <div class="applications-header">
+            <h5 class="mb-0">Liste des candidatures</h5>
+            {% if applications|length == 0 %}
+                <p class="text-muted mb-0 mt-2">Aucune candidature pour le moment</p>
+            {% else %}
+                <p class="text-muted mb-0 mt-2">{{ applications|length }} candidature(s) reçue(s)</p>
+            {% endif %}
+        </div>
+        
+        {% if applications|length > 0 %}
+        <div class="applications-body">
+            <!-- Filter -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-filter"></i>
+                        </span>
+                        <select id="statusFilter" class="form-select">
+                            <option value="all">Tous les statuts</option>
+                            <option value="pending">En attente</option>
+                            <option value="reviewed">En revue</option>
+                            <option value="accepted">Acceptées</option>
+                            <option value="rejected">Rejetées</option>
+                        </select>
+                        <button id="applyFilter" class="btn btn-outline-danger">Filtrer</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Applications -->
+            {% for application in applications %}
+            <div class="application-item" data-status="{{ application.status }}">
+                <div class="application-header">
+                    <div class="candidate-info">
+                        <div class="avatar">
+                            {{ application.candidate.name|slice(0, 1)|upper }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ application.candidate.name }}</h6>
+                            <small class="text-muted">{{ application.candidate.email }}</small>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge-status badge-{{ application.status }}">
+                            {% if application.status == 'pending' %}En attente
+                            {% elseif application.status == 'reviewed' %}En revue
+                            {% elseif application.status == 'accepted' %}Acceptée
+                            {% elseif application.status == 'rejected' %}Rejetée
+                            {% else %}{{ application.status|capitalize }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if application.message %}
+                <div class="application-message">
+                    <strong>Message du candidat :</strong>
+                    <p class="mb-0 mt-1">{{ application.message }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">CV</small>
+                        {% if application.candidate.cvPath %}
+                            <a href="{{ application.candidate.cvPath }}" 
+                               target="_blank" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-file-pdf me-1"></i> Voir le CV
+                            </a>
+                        {% else %}
+                            <span class="text-muted small">Aucun CV fourni</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Date de candidature</small>
+                        <span class="small">
+                            {% if application.appliedAt %}
+                                {{ application.appliedAt|date('d/m/Y H:i') }}
+                            {% else %}
+                                Date non disponible
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="application-footer">
+                    <div class="text-muted small">
+                        ID: #{{ application.id }}
+                    </div>
+                    <div class="application-actions">
+                        <!-- Status Update Form -->
+                        <form action="/admin/applications/{{ application.id }}/update-status" 
+                              method="POST" 
+                              class="d-inline">
+                            <div class="btn-group">
+                                <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                    <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>En attente</option>
+                                    <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>En revue</option>
+                                    <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Acceptée</option>
+                                    <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejetée</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <a href="/admin/candidates/{{ application.candidate.id }}" 
+                           class="btn btn-sm btn-outline-info ms-1"
+                           title="Voir le profil">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        
+                        <a href="/admin/applications/{{ application.id }}/delete" 
+                           class="btn btn-sm btn-outline-danger ms-1"
+                           title="Supprimer"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature ?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if applications|length > 10 %}
+        <div class="card-footer">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="applications-body text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Aucune candidature</h5>
+            <p class="text-muted mb-0">Aucun candidat n'a encore postulé à cette offre.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+        
+        // Filter applications by status
+        const statusFilter = document.getElementById('statusFilter');
+        const applyFilter = document.getElementById('applyFilter');
+        const applicationItems = document.querySelectorAll('.application-item');
+        
+        function filterApplications() {
+            const selectedStatus = statusFilter.value;
+            
+            applicationItems.forEach(item => {
+                if (selectedStatus === 'all' || item.dataset.status === selectedStatus) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        if (applyFilter && statusFilter) {
+            applyFilter.addEventListener('click', filterApplications);
+            statusFilter.addEventListener('change', filterApplications);
+        }
+        
+        // Confirm status changes
+        const statusForms = document.querySelectorAll('form[action*="update-status"]');
+        statusForms.forEach(form => {
+            const select = form.querySelector('select[name="status"]');
+            const originalStatus = select.value;
+            
+            select.addEventListener('change', function() {
+                const newStatus = this.value;
+                const statusText = {
+                    'pending': 'En attente',
+                    'reviewed': 'En revue', 
+                    'accepted': 'Acceptée',
+                    'rejected': 'Rejetée'
+                }[newStatus];
+                
+                if (!confirm(`Changer le statut de cette candidature en "${statusText}" ?`)) {
+                    this.value = originalStatus;
+                }
+            });
+        });
+        
+        // Quick status update
+        document.querySelectorAll('.status-update-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const applicationId = this.dataset.applicationId;
+                const newStatus = this.dataset.status;
+                const statusText = this.dataset.statusText;
+                
+                if (confirm(`Marquer cette candidature comme "${statusText}" ?`)) {
+                    // You would typically make an AJAX call here
+                    // For now, just submit the form
+                    const form = document.querySelector(`form[action*="${applicationId}"]`);
+                    if (form) {
+                        form.querySelector('select[name="status"]').value = newStatus;
+                        form.submit();
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

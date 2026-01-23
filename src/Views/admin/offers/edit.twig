@@ -1,0 +1,263 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .form-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: white;
+        padding: 25px;
+    }
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/offers">Offers</a></li>
+            <li class="breadcrumb-item"><a href="/admin/offers/{{ offer.id }}">{{ offer.title|slice(0, 20) }}...</a></li>
+            <li class="breadcrumb-item active">Modifier</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Modifiez les informations de l'offre</p>
+        </div>
+        <div>
+            <a href="/admin/offers/{{ offer.id }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if session.error %}
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            {{ session.error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-card">
+                <form action="/admin/offers/{{ offer.id }}/update" method="POST">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Informations de base</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="title" class="form-label">Titre de l'offre *</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="title" 
+                                       name="title" 
+                                       value="{{ offer.title }}"
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Localisation *</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="location" 
+                                       name="location" 
+                                       value="{{ offer.location }}"
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="job_type" class="form-label">Type de contrat *</label>
+                                <select class="form-control" id="job_type" name="job_type" required>
+                                    <option value="CDI" {% if offer.jobType == 'CDI' %}selected{% endif %}>CDI</option>
+                                    <option value="CDD" {% if offer.jobType == 'CDD' %}selected{% endif %}>CDD</option>
+                                    <option value="Stage" {% if offer.jobType == 'Stage' %}selected{% endif %}>Stage</option>
+                                    <option value="Alternance" {% if offer.jobType == 'Alternance' %}selected{% endif %}>Alternance</option>
+                                    <option value="Freelance" {% if offer.jobType == 'Freelance' %}selected{% endif %}>Freelance</option>
+                                    <option value="Temps partiel" {% if offer.jobType == 'Temps partiel' %}selected{% endif %}>Temps partiel</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="categorie_id" class="form-label">Catégorie *</label>
+                                <select class="form-control" id="categorie_id" name="categorie_id" required>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if category.id == offer.categorie.id %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Salary Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Informations salariales</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="salary_min" class="form-label">Salaire minimum (€)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="salary_min" 
+                                       name="salary_min" 
+                                       value="{{ offer.salaryMin }}"
+                                       min="0"
+                                       step="1000">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salary_max" class="form-label">Salaire maximum (€)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="salary_max" 
+                                       name="salary_max" 
+                                       value="{{ offer.salaryMax }}"
+                                       min="0"
+                                       step="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recruiter Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Recruteur</h5>
+                        <div class="mb-3">
+                            <label for="recruiter_id" class="form-label">Recruteur *</label>
+                            <select class="form-control" id="recruiter_id" name="recruiter_id" required>
+                                {% for recruiter in recruiters %}
+                                    <option value="{{ recruiter.id }}" {% if recruiter.id == offer.recruiter.id %}selected{% endif %}>
+                                        {{ recruiter.companyName|default(recruiter.name) }} - {{ recruiter.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Status Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Statut de l'offre</h5>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="is_archived" 
+                                       name="is_archived" 
+                                       value="1"
+                                       {% if offer.isArchived() %}checked{% endif %}>
+                                <label class="form-check-label" for="is_archived">
+                                    Offre archivée
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    Une offre archivée n'est plus visible par les candidats mais reste accessible pour les administrateurs.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Description du poste</h5>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description détaillée *</label>
+                            <textarea class="form-control" 
+                                      id="description" 
+                                      name="description" 
+                                      rows="10" 
+                                      required>{{ offer.description }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/offers/{{ offer.id }}" class="btn btn-secondary">Annuler</a>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validation du formulaire
+        const form = document.querySelector('form');
+        const salaryMin = document.getElementById('salary_min');
+        const salaryMax = document.getElementById('salary_max');
+        
+        form.addEventListener('submit', function(e) {
+            // Validation des salaires
+            if (salaryMin.value && salaryMax.value && parseInt(salaryMin.value) > parseInt(salaryMax.value)) {
+                e.preventDefault();
+                alert('Le salaire minimum ne peut pas être supérieur au salaire maximum.');
+                salaryMin.focus();
+                return false;
+            }
+            
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        });
+        
+        // Validation en temps réel des salaires
+        function validateSalaries() {
+            const min = parseInt(salaryMin.value) || 0;
+            const max = parseInt(salaryMax.value) || 0;
+            
+            if (min > max && max > 0) {
+                salaryMin.classList.add('is-invalid');
+                salaryMax.classList.add('is-invalid');
+                return false;
+            } else {
+                salaryMin.classList.remove('is-invalid');
+                salaryMax.classList.remove('is-invalid');
+                return true;
+            }
+        }
+        
+        salaryMin.addEventListener('input', validateSalaries);
+        salaryMax.addEventListener('input', validateSalaries);
+        
+        // Mise à jour de l'interface quand on archive/désarchive
+        const archiveSwitch = document.getElementById('is_archived');
+        if (archiveSwitch) {
+            archiveSwitch.addEventListener('change', function() {
+                const statusText = this.checked ? 'archivée' : 'active';
+                if (!confirm(`Voulez-vous vraiment marquer cette offre comme ${statusText} ?`)) {
+                    this.checked = !this.checked;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

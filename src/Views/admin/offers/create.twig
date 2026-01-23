@@ -1,0 +1,210 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .form-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: white;
+        padding: 25px;
+    }
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/offers">Offers</a></li>
+            <li class="breadcrumb-item active">Créer</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Créez une nouvelle offre d'emploi</p>
+        </div>
+        <div>
+            <a href="/admin/offers" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if session.error %}
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            {{ session.error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-card">
+                <form action="/admin/offers/store" method="POST">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Informations de base</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="title" class="form-label">Titre de l'offre *</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="title" 
+                                       name="title" 
+                                       required
+                                       placeholder="Ex: Développeur PHP Senior">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Localisation *</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="location" 
+                                       name="location" 
+                                       required
+                                       placeholder="Ex: Paris, Remote, etc.">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="job_type" class="form-label">Type de contrat *</label>
+                                <select class="form-control" id="job_type" name="job_type" required>
+                                    <option value="">Sélectionnez un type</option>
+                                    <option value="CDI">CDI</option>
+                                    <option value="CDD">CDD</option>
+                                    <option value="Stage">Stage</option>
+                                    <option value="Alternance">Alternance</option>
+                                    <option value="Freelance">Freelance</option>
+                                    <option value="Temps partiel">Temps partiel</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="categorie_id" class="form-label">Catégorie *</label>
+                                <select class="form-control" id="categorie_id" name="categorie_id" required>
+                                    <option value="">Sélectionnez une catégorie</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Salary Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Informations salariales</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="salary_min" class="form-label">Salaire minimum (€)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="salary_min" 
+                                       name="salary_min" 
+                                       min="0"
+                                       step="1000"
+                                       placeholder="Ex: 35000">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salary_max" class="form-label">Salaire maximum (€)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="salary_max" 
+                                       name="salary_max" 
+                                       min="0"
+                                       step="1000"
+                                       placeholder="Ex: 50000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recruiter Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Recruteur</h5>
+                        <div class="mb-3">
+                            <label for="recruiter_id" class="form-label">Recruteur *</label>
+                            <select class="form-control" id="recruiter_id" name="recruiter_id" required>
+                                <option value="">Sélectionnez un recruteur</option>
+                                {% for recruiter in recruiters %}
+                                    <option value="{{ recruiter.id }}">
+                                        {{ recruiter.companyName|default(recruiter.name) }} - {{ recruiter.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">Description du poste</h5>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description détaillée *</label>
+                            <textarea class="form-control" 
+                                      id="description" 
+                                      name="description" 
+                                      rows="10" 
+                                      required
+                                      placeholder="Décrivez en détail le poste, les missions, les compétences requises..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/offers" class="btn btn-secondary">Annuler</a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-save me-2"></i>Créer l'offre
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validation du formulaire
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            // Validation des salaires
+            const salaryMin = document.getElementById('salary_min').value;
+            const salaryMax = document.getElementById('salary_max').value;
+            
+            if (salaryMin && salaryMax && parseInt(salaryMin) > parseInt(salaryMax)) {
+                e.preventDefault();
+                alert('Le salaire minimum ne peut pas être supérieur au salaire maximum.');
+                return false;
+            }
+            
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        });
+    });
+</script>
+{% endblock %}
