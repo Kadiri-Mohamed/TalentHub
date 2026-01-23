@@ -1,12 +1,12 @@
 <?php
 
 use App\Routes\Router;
-use App\Controllers\LoginController;
-use App\Controllers\Recruiter\RegisterController;
-use App\Controllers\LogoutController;
+use App\Controllers\Auth\LoginController;
+use App\Controllers\Auth\RegisterController;
+use App\Controllers\Auth\LogoutController;
 use App\Controllers\CandidateController;
-use App\Controllers\RecruiterController;
-use App\Controllers\AdminController;
+use App\Controllers\Recruiter\RecruiterController;
+use App\Controllers\Admin\AdminController;
 
 // Routes publiques (invités seulement)
 Router::get('/login', [LoginController::class, 'index']);

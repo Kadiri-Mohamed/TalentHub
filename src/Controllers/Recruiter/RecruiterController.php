@@ -6,41 +6,48 @@ use App\Core\Twig;
 use App\Services\RecruiterService;
 use App\Services\CategorieService;
 use App\Services\ApplicationService;
+use App\Core\Session;
+use App\Core\Middleware\RoleMiddleware;
+
+use App\Core\Middleware\AuthMiddleware;
 
 class RecruiterController
 {
-    private RecruiterService $recruiterService;
-    private CategorieService $categorieService;
-    private ApplicationService $applicationService;
+    private $recruiterService;
+    private $categorieService;
 
     public function __construct()
     {
+        (new AuthMiddleware())->handle();
+        (new RoleMiddleware('recruiter'))->handle();
         $this->recruiterService = new RecruiterService();
         $this->categorieService = new CategorieService();
-        $this->applicationService = new ApplicationService();
-        
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['recruiter_id'])) {
-            header('Location: /login');
-            exit;
-        }
+
     }
 
-    
-    public function dashboard(): void
-    {
-        $recruiterId = $_SESSION['recruiter_id'];
-        $recruiter = $this->recruiterService->getRecruiterById($recruiterId);
-        $stats = $this->recruiterService->getRecruiterStats($recruiterId);
-        
-        Twig::display('recruiter/dashboard.twig', [
-            'recruiter' => $recruiter,
-            'stats' => $stats
-        ]);
-    }
+   public function dashboard()
+{
+    $recruiterId = Session::get('user_id');
+
+    $stats = $this->recruiterService->getRecruiterStats($recruiterId);
+
+    Twig::display('dashboard/recruiter.twig', [
+    'title' => 'Tableau de bord Recruteur',
+    'user' => [
+        'name' => Session::get('user_name') ?? 'Recruteur',
+        'company' => 'TechRecruit',
+        'email' => Session::get('user_email') ?? 'recruteur@example.com',
+    ],
+    'stats' => [
+        'active_jobs'         => $stats['active_offers'],
+        'total_applications'  => $stats['total_applications'],
+        'new_applications'    => $stats['new_applications'],
+        'hired_candidates'    => $stats['hired_candidates'],
+    ],
+]);
+
+}
+
 
     public function listOffers(): void
     {
@@ -118,7 +125,6 @@ class RecruiterController
         $recruiterId = $_SESSION['recruiter_id'];
         $offers = $this->recruiterService->getRecruiterOffers($recruiterId);
         
-        // Vérifier que l'offre appartient au recruteur
         $offer = null;
         foreach ($offers as $o) {
             if ($o->getId() === $offerId) {
@@ -159,7 +165,7 @@ class RecruiterController
             'category_id' => intval($_POST['category_id'] ?? 0)
         ];
         
-        // Validation
+        
         $errors = $this->validateOfferData($offerData);
         
         if (!empty($errors)) {
@@ -181,9 +187,7 @@ class RecruiterController
         exit;
     }
 
-    /**
-     * Archiver une offre
-     */
+   
     public function archiveOffer(int $offerId): void
     {
         $archived = $this->recruiterService->archiveOffer($offerId);
