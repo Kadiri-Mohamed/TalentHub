@@ -9,7 +9,7 @@ use App\Core\Session;
 use App\Services\OfferService;
 use App\Services\ApplicationService;
 
-class OfferController
+class OfferControllerrr
 {
     private OfferService $offerService;
     private ApplicationService $applicationService;
