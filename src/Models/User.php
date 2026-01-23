@@ -55,6 +55,10 @@ class User
         $this->name = $name;
     }
 
+    public function setPassword(string $password): void{
+        $this->password = $password;
+    }
+
     public function setEmail(string $email): void{
         $this->email = $email;
     }   
