@@ -2,7 +2,7 @@
 
 use App\Routes\Router;
 use App\Controllers\LoginController;
-use App\Controllers\RegisterController;
+use App\Controllers\Recruiter\RegisterController;
 use App\Controllers\LogoutController;
 use App\Controllers\CandidateController;
 use App\Controllers\RecruiterController;
