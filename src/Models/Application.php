@@ -98,49 +98,31 @@ class Application
         $this->candidate = $candidate;
     }
 
-    /**
-     * Check if application is pending
-     */
     public function isPending(): bool
     {
         return $this->status === 'pending';
     }
 
-    /**
-     * Check if application is accepted
-     */
     public function isAccepted(): bool
     {
         return $this->status === 'accepted';
     }
 
-    /**
-     * Check if application is rejected
-     */
     public function isRejected(): bool
     {
         return $this->status === 'rejected';
     }
 
-    /**
-     * Accept the application
-     */
     public function accept(): void
     {
         $this->status = 'accepted';
     }
 
-    /**
-     * Reject the application
-     */
     public function reject(): void
     {
         $this->status = 'rejected';
     }
 
-    /**
-     * Reset to pending status
-     */
     public function reset(): void
     {
         $this->status = 'pending';

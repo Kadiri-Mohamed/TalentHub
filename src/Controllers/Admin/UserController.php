@@ -83,7 +83,7 @@ class UserController
             'role_id' => (int) ($_POST['role_id'] ?? 2),
         ];
         
-        // Validation
+        
         if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
             Session::set('error', 'Tous les champs obligatoires doivent être remplis');
             header('Location: /admin/users/create');
@@ -135,17 +135,17 @@ class UserController
             exit;
         }
         
-        // Mettre à jour les informations
+        
         $user->setName(trim($_POST['name'] ?? $user->getName()));
         $user->setEmail(trim($_POST['email'] ?? $user->getEmail()));
         
-        // Mettre à jour le rôle si spécifié
+        
         if (isset($_POST['role_id'])) {
             $roleId = (int) $_POST['role_id'];
             $this->adminService->updateUserRole($user->getId(), $roleId);
         }
         
-        // Mettre à jour le mot de passe si fourni
+        
         if (!empty($_POST['password'])) {
             $user->setPassword(password_hash($_POST['password'], PASSWORD_DEFAULT));
         }
@@ -170,7 +170,7 @@ class UserController
             exit;
         }
         
-        // Empêcher l'admin de se supprimer lui-même
+        
         $currentUserId = (int) Session::get('user_id');
         if ($user->getId() === $currentUserId) {
             Session::set('error', 'Vous ne pouvez pas supprimer votre propre compte');
@@ -190,8 +190,7 @@ class UserController
 
     public function toggleStatus($id)
     {
-        // Note: Vous devrez ajouter cette méthode dans AdminService
-        // Pour l'instant, redirige vers edit
+        
         Session::set('info', 'La fonctionnalité de changement de statut sera bientôt disponible');
         header('Location: /admin/users/' . $id . '/edit');
         exit;
@@ -209,7 +208,6 @@ class UserController
         
         $users = $this->adminService->getAllUsers();
         
-        // Filtrer les résultats
         if (!empty($search) || !empty($role)) {
             $filteredUsers = array_filter($users, function($user) use ($search, $role) {
                 $matchesSearch = empty($search) || 
@@ -222,7 +220,7 @@ class UserController
                 return $matchesSearch && $matchesRole;
             });
             
-            $users = array_values($filteredUsers); // Réindexer le tableau
+            $users = array_values($filteredUsers);
         }
         
         $stats = $this->adminService->getStats();

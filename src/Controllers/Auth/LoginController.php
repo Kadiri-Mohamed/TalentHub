@@ -1,5 +1,4 @@
 <?php
-// src/Controllers/LoginController.php
 
 namespace App\Controllers\Auth;
 

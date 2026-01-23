@@ -19,7 +19,6 @@ class ProfileController
         $this->candidateService = new CandidateService();
     }
 
-    // Show profile page
     public function index()
     {
         $candidate = $this->candidateService->getCurrentCandidate();
@@ -30,7 +29,6 @@ class ProfileController
         ]);
     }
 
-    // Edit profile page
     public function edit()
     {
         $candidate = $this->candidateService->getCurrentCandidate();
@@ -41,7 +39,6 @@ class ProfileController
         ]);
     }
 
-    // Update profile data
     public function update()
     {
         $candidate = $this->candidateService->getCurrentCandidate();
@@ -50,7 +47,6 @@ class ProfileController
             exit;
         }
 
-        // Update candidate fields from POST
         $candidate->setName($_POST['name'] ?? $candidate->getName());
         $candidate->setEmail($_POST['email'] ?? $candidate->getEmail());
 
@@ -60,7 +56,6 @@ class ProfileController
         exit;
     }
 
-    // Upload CV
     public function uploadCv()
     {
         $candidate = $this->candidateService->getCurrentCandidate();

@@ -23,7 +23,6 @@ class TagService
             return false;
         }
 
-        // Prevent duplicate tags
         if ($this->tagRepository->findByName($name)) {
             return false;
         }

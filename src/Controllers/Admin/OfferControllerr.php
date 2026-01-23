@@ -58,7 +58,6 @@ class OfferControllerr
             exit;
         }
         
-        // Récupérer les candidatures pour cette offre
         $applications = $this->offerService->getOfferApplications($offer->getId());
         
         Twig::display('admin/offers/show.twig', [
@@ -104,7 +103,6 @@ class OfferControllerr
             exit;
         }
         
-        // Valider les données
         $validationErrors = $this->offerService->validateOfferData($_POST);
         if (!empty($validationErrors)) {
             Session::set('error', implode(', ', array_values($validationErrors)));
@@ -113,7 +111,7 @@ class OfferControllerr
         }
         
         $offer = new Offer(
-            0, // ID sera généré par la base de données
+            0, 
             trim($_POST['title'] ?? ''),
             trim($_POST['description'] ?? ''),
             false, // is_archived
@@ -185,7 +183,6 @@ class OfferControllerr
             exit;
         }
         
-        // Valider les données
         $validationErrors = $this->offerService->validateOfferData($_POST);
         if (!empty($validationErrors)) {
             Session::set('error', implode(', ', array_values($validationErrors)));
@@ -193,7 +190,6 @@ class OfferControllerr
             exit;
         }
         
-        // Mettre à jour l'offre
         $offer->setTitle(trim($_POST['title'] ?? $offer->getTitle()));
         $offer->setDescription(trim($_POST['description'] ?? $offer->getDescription()));
         $offer->setSalaryMin((float) ($_POST['salary_min'] ?? $offer->getSalaryMin()));
@@ -267,17 +263,14 @@ class OfferControllerr
         
         $offers = $this->adminService->getAllOffers();
         
-        // Filtrer les résultats
         if (!empty($search) || $status !== 'all') {
             $filteredOffers = array_filter($offers, function($offer) use ($search, $status) {
-                // Recherche par titre, description ou recruteur
                 $matchesSearch = empty($search) || 
                                stripos($offer->getTitle(), $search) !== false || 
                                stripos($offer->getDescription(), $search) !== false ||
                                stripos($offer->getRecruiter()->getCompanyName(), $search) !== false ||
                                stripos($offer->getRecruiter()->getName(), $search) !== false;
                 
-                // Filtre par statut
                 $matchesStatus = $status === 'all' || 
                                ($status === 'active' && !$offer->isArchived()) ||
                                ($status === 'archived' && $offer->isArchived());
@@ -285,7 +278,7 @@ class OfferControllerr
                 return $matchesSearch && $matchesStatus;
             });
             
-            $offers = array_values($filteredOffers); // Réindexer le tableau
+            $offers = array_values($filteredOffers);
         }
         
         $stats = $this->adminService->getStats();
@@ -338,7 +331,6 @@ class OfferControllerr
         
         $applications = $this->offerService->getOfferApplications($offer->getId());
         
-        // Générer un CSV des candidatures
         $filename = 'candidatures-offre-' . $offer->getId() . '-' . date('Y-m-d') . '.csv';
         
         header('Content-Type: text/csv');
@@ -346,7 +338,6 @@ class OfferControllerr
         
         $output = fopen('php://output', 'w');
         
-        // En-têtes CSV
         fputcsv($output, [
             'ID',
             'Candidat',
@@ -357,7 +348,6 @@ class OfferControllerr
             'Date de candidature'
         ]);
         
-        // Données
         foreach ($applications as $application) {
             $candidate = $application->getCandidate();
             fputcsv($output, [

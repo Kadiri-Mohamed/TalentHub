@@ -49,21 +49,18 @@ class Router
 
     foreach (self::$routes[$method] as $route => $handler) {
 
-        // Convert /admin/users/{id} → regex
         $pattern = preg_replace('#\{[a-zA-Z_]+\}#', '([0-9]+)', $route);
         $pattern = "#^" . $pattern . "$#";
 
         if (preg_match($pattern, $path, $matches)) {
 
-            array_shift($matches); // remove full match → keep params
+            array_shift($matches);
 
-            // Closure
             if ($handler instanceof \Closure) {
                 call_user_func_array($handler, $matches);
                 return;
             }
 
-            // [Controller::class, 'method']
             if (is_array($handler) && count($handler) === 2) {
                 [$controllerClass, $action] = $handler;
                 $controller = new $controllerClass();
@@ -71,7 +68,6 @@ class Router
                 return;
             }
 
-            // "Controller@method"
             if (is_string($handler) && strpos($handler, '@') !== false) {
                 [$controllerClass, $action] = explode('@', $handler);
                 $controller = new $controllerClass();

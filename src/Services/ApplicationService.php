@@ -32,7 +32,6 @@ class ApplicationService
             return false;
         }
 
-        // Vérifier si déjà appliqué
         if ($this->hasApplied($candidateId, $offerId)) {
             return false;
         }

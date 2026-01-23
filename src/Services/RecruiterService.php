@@ -63,8 +63,8 @@ class RecruiterService
             $offerData['title'],
             $offerData['description'],
             false,
-            (float)$offerData['salary_min'],
-            (float)$offerData['salary_max'],
+            (float) $offerData['salary_min'],
+            (float) $offerData['salary_max'],
             $offerData['location'],
             $offerData['job_type'],
             $recruiter,
@@ -84,8 +84,8 @@ class RecruiterService
 
         $offer->setTitle($offerData['title'] ?? $offer->getTitle());
         $offer->setDescription($offerData['description'] ?? $offer->getDescription());
-        $offer->setSalaryMin((float)($offerData['salary_min'] ?? $offer->getSalaryMin()));
-        $offer->setSalaryMax((float)($offerData['salary_max'] ?? $offer->getSalaryMax()));
+        $offer->setSalaryMin((float) ($offerData['salary_min'] ?? $offer->getSalaryMin()));
+        $offer->setSalaryMax((float) ($offerData['salary_max'] ?? $offer->getSalaryMax()));
         $offer->setLocation($offerData['location'] ?? $offer->getLocation());
         $offer->setJobType($offerData['job_type'] ?? $offer->getJobType());
 
@@ -180,12 +180,12 @@ class RecruiterService
         }
 
         return [
-            'active_offers'       => $activeOffers,
-            'archived_offers'     => $archivedOffers,
-            'total_offers'        => count($offers),
-            'total_applications'  => $totalApplications,
-            'new_applications'    => $newApplications,
-            'hired_candidates'    => $hiredCandidates
+            'active_offers' => $activeOffers,
+            'archived_offers' => $archivedOffers,
+            'total_offers' => count($offers),
+            'total_applications' => $totalApplications,
+            'new_applications' => $newApplications,
+            'hired_candidates' => $hiredCandidates
         ];
     }
 

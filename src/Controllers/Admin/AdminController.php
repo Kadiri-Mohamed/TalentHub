@@ -20,7 +20,6 @@ class AdminController
 
     public function dashboard()
     {
-        // Récupérer les statistiques de l'administrateur
         $stats = $this->adminService->getStats();
         Twig::display('dashboard/admin.twig', [
             'title' => 'Tableau de bord Administrateur',

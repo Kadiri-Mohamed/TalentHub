@@ -23,7 +23,6 @@ class OfferControllerrr
         $this->applicationService = new ApplicationService();
     }
 
-    // List active offers
     public function index()
     {
         $offers = $this->offerService->getActiveOffers();
@@ -34,7 +33,6 @@ class OfferControllerrr
         ]);
     }
 
-    // Show offer details
     public function show(int $id)
     {
         $offer = $this->offerService->getOfferById($id);
@@ -44,7 +42,6 @@ class OfferControllerrr
             exit;
         }
 
-        // Use existing ApplicationService
         $hasApplied = $this->applicationService->hasApplied(
             Session::get('user_id'),
             $id
@@ -57,12 +54,10 @@ class OfferControllerrr
         ]);
     }
 
-    // Apply to an offer
     public function apply(int $id)
     {
         $candidateId = Session::get('user_id');
 
-        // Optional safety check (you already have this logic!)
         $canApply = $this->offerService->canCandidateApply($id, $candidateId);
 
         if (!$canApply['can_apply']) {
@@ -73,8 +68,8 @@ class OfferControllerrr
         $this->applicationService->apply(
             $id,
             $candidateId,
-            '/uploads/cv.pdf',     // placeholder
-            'Lettre de motivation' // placeholder
+            '/uploads/cv.pdf',     
+            'Lettre de motivation'
         );
 
         header('Location: /candidate/applications');

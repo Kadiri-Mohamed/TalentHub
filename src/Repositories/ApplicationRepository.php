@@ -22,7 +22,6 @@ class ApplicationRepository extends BaseRepository
         $this->candidateRepository = new CandidateRepository();
     }
 
-    // Create a new application
     public function create(Application $application): bool
     {
     return $this->insert([
@@ -35,7 +34,6 @@ class ApplicationRepository extends BaseRepository
     }
 
 
-    // Get all applications
     public function getAll(): array
     {
         $rows = parent::findAll();
@@ -59,7 +57,6 @@ class ApplicationRepository extends BaseRepository
         return $applications;
     }
 
-    // Get application by ID
     public function getById(int $id): ?Application
     {
         $row = parent::findById($id);
@@ -79,7 +76,6 @@ class ApplicationRepository extends BaseRepository
         );
     }
 
-    // Update an application
     public function updateApplication(Application $application): bool
     {
         return parent::update(
@@ -95,13 +91,11 @@ class ApplicationRepository extends BaseRepository
         );
     }
 
-    // Delete an application
     public function deleteApplication(int $id): bool
     {
         return parent::delete($id);
     }
 
-    // Find all applications for a specific candidate
     public function findByCandidate(int $candidateId): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE candidate_id = :cid";
@@ -128,7 +122,6 @@ class ApplicationRepository extends BaseRepository
         return $applications;
     }
 
-    // Find all applications for a specific offer
     public function findByOffer(int $offerId): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE offer_id = :oid";

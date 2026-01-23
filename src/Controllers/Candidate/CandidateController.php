@@ -13,7 +13,6 @@ class CandidateController
     private CandidateService $candidateService;
     public function __construct()
     {
-        // Appliquer les middlewares directement
         (new AuthMiddleware())->handle();
         (new RoleMiddleware('candidate'))->handle();
         $this->candidateService = new CandidateService();

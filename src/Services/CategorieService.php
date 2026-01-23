@@ -23,7 +23,6 @@ class CategorieService
             return false;
         }
 
-        // Prevent duplicates
         if ($this->categorieRepository->findByName($name)) {
             return false;
         }

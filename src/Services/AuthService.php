@@ -19,9 +19,6 @@ class AuthService
         $this->roleRepository = new RoleRepository();
     }
 
-    /**
-     * Login user
-     */
     public function login(string $email, string $password): bool
     {
         $user = $this->userRepository->findByEmail($email);
@@ -39,8 +36,8 @@ class AuthService
         Session::regenerate();
 
         Session::set('user_id', $user->getId());
-        Session::set('user_email', $user->getEmail()); // Ajoutez ceci
-        Session::set('user_name', $user->getName());   // Ajoutez ceci
+        Session::set('user_email', $user->getEmail());
+        Session::set('user_name', $user->getName());
         Session::set('role_id', $role->getId());
         Session::set('role_name', $role->getName());
         Session::set('logged_in', true);
@@ -48,9 +45,6 @@ class AuthService
         return true;
     }
 
-    /**
-     * Logout user
-     */
     public function logout(): void
     {
         Session::destroy();
@@ -59,25 +53,16 @@ class AuthService
         exit;
     }
 
-    /**
-     * Check if user is authenticated
-     */
     public function isAuthenticated(): bool
     {
         return Session::get('logged_in') === true;
     }
 
-    /**
-     * Get current user role
-     */
     public function getRole(): ?string
     {
         return Session::get('role_name');
     }
 
-    /**
-     * Require authentication
-     */
     public function requireAuth(): void
     {
         if (!$this->isAuthenticated()) {
@@ -86,9 +71,7 @@ class AuthService
         }
     }
 
-    /**
-     * Require a specific role
-     */
+
     public function requireRole(string $role): void
     {
         $this->requireAuth();
@@ -100,12 +83,9 @@ class AuthService
         }
     }
 
-    /**
-     * Redirect user after login based on role
-     */
+
     public function redirectAfterLogin(): void
 {
-    // Debug
     error_log("Redirection après login, session: " . print_r($_SESSION, true));
     
     $role = Session::get('role_name');

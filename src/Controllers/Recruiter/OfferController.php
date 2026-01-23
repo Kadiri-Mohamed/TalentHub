@@ -27,15 +27,12 @@ class OfferController
 
     public function store(): void
     {
-        // Vérifier si l'utilisateur est un recruteur
       
         
         $recruiterId = Session::get('user_id');
         
-        // Créer l'objet Role
         $role = new Role(2, 'recruiter');
         
-        // Créer l'objet Recruiter
         $recruiter = new Recruiter(
             $recruiterId,
             Session::get('user_name') ?? 'Recruteur',
@@ -45,7 +42,6 @@ class OfferController
             Session::get('user_company') ?? 'Entreprise'
         );
         
-        // Récupérer la catégorie depuis la base
         $categoryRepository = new \App\Repositories\CategorieRepository();
         $category = $categoryRepository->getById((int)($_POST['category_id'] ?? 0));
         
@@ -55,7 +51,6 @@ class OfferController
             exit;
         }
         
-        // Gérer les salaires (0.0 si vide)
         $salaryMin = 0.0;
         $salaryMax = 0.0;
         
@@ -67,9 +62,8 @@ class OfferController
             $salaryMax = floatval($_POST['salary_max']);
         }
         
-        // Créer l'offre avec ID 0
         $offer = new Offer(
-            0, // IMPORTANT: 0 au lieu de null
+            0,
             trim($_POST['title'] ?? ""),
             trim($_POST['description'] ?? ""),
             false,
@@ -81,7 +75,6 @@ class OfferController
             $category
         );
         
-        // Validation
         $data = [
             'title' => $offer->getTitle(),
             'description' => $offer->getDescription(),
@@ -99,7 +92,6 @@ class OfferController
             exit;
         }
         
-        // Sauvegarder
         $success = $this->offerService->createOffer($offer);
         
         if ($success) {
@@ -113,7 +105,6 @@ class OfferController
     }
     public function jobPostings(): void
 {
-    // Vérifier l'authentification (déjà faite dans le constructeur)
     $recruiterId = Session::get('user_id');
 
     if (!$recruiterId) {
@@ -121,10 +112,8 @@ class OfferController
         exit;
     }
 
-    // Récupérer les offres du recruteur connecté
     $offers = $this->offerService->getOffersByRecruiter($recruiterId);
 
-    // Afficher la vue
     Twig::display('recruiter/job-postings.twig', [
         'title' => 'Mes offres d\'emploi',
         'offers' => $offers,

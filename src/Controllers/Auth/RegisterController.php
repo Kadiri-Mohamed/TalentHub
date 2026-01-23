@@ -1,5 +1,4 @@
 <?php
-// src/Controllers/RegisterController.php
 
 namespace App\Controllers\Auth;
 

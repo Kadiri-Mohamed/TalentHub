@@ -22,9 +22,6 @@ class OfferRepository extends BaseRepository
         $this->categoryRepository = new CategorieRepository();
     }
 
-    /**
-     * Create new offer
-     */
     public function createOffer(Offer $offer): bool
     {
         return $this->insert([
@@ -40,9 +37,6 @@ class OfferRepository extends BaseRepository
         ]);
     }
 
-    /**
-     * Get all offers as Offer objects
-     */
     public function getAll(): array
     {
         $rows = parent::findAll();
@@ -69,9 +63,6 @@ class OfferRepository extends BaseRepository
         return $offers;
     }
 
-    /**
-     * Get offer by ID as Offer object
-     */
     public function getById(int $id): ?Offer
     {
         $row = parent::findById($id);
@@ -97,9 +88,6 @@ class OfferRepository extends BaseRepository
         );
     }
 
-    /**
-     * Update offer
-     */
     public function updateOffer(Offer $offer): bool
     {
         return parent::update(
@@ -118,17 +106,11 @@ class OfferRepository extends BaseRepository
         );
     }
 
-    /**
-     * Delete offer
-     */
     public function deleteOffer(int $id): bool
     {
         return parent::delete($id);
     }
 
-    /**
-     * Find offers by recruiter
-     */
     public function findByRecruiter(int $recruiterId): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE recruiter_id = :recruiter_id";
@@ -159,9 +141,6 @@ class OfferRepository extends BaseRepository
         return $offers;
     }
 
-    /**
-     * Find offers by category
-     */
     public function findByCategory(int $categoryId): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE category_id = :category_id";
@@ -192,9 +171,6 @@ class OfferRepository extends BaseRepository
         return $offers;
     }
 
-    /**
-     * Find active offers (not archived)
-     */
     public function findActive(): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE is_archived = 0";
@@ -224,25 +200,16 @@ class OfferRepository extends BaseRepository
         return $offers;
     }
 
-    /**
-     * Archive an offer
-     */
     public function archive(int $id): bool
     {
         return parent::update($id, ['is_archived' => 1]);
     }
 
-    /**
-     * Unarchive an offer
-     */
     public function unarchive(int $id): bool
     {
         return parent::update($id, ['is_archived' => 0]);
     }
 
-    /**
-     * Search offers by title or description
-     */
     public function search(string $keyword): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE (title LIKE :keyword OR description LIKE :keyword) AND is_archived = 0";
@@ -273,9 +240,6 @@ class OfferRepository extends BaseRepository
         return $offers;
     }
 
-    /**
-     * Find offers by location
-     */
     public function findByLocation(string $location): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE location = :location AND is_archived = 0";
