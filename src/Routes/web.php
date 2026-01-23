@@ -4,7 +4,8 @@ use App\Routes\Router;
 use App\Controllers\Auth\LoginController;
 use App\Controllers\Auth\RegisterController;
 use App\Controllers\Auth\LogoutController;
-use App\Controllers\CandidateController;
+use App\Controllers\Candidate\CandidateController;
+use App\Controllers\Candidate\ApplicationController;
 use App\Controllers\Recruiter\RecruiterController;
 use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\UserController;
@@ -32,7 +33,7 @@ Router::get('/', function() {
 
 // Routes Candidat
 Router::get('/candidate/dashboard', [CandidateController::class, 'dashboard']);
-Router::get('/candidate/applications', [CandidateController::class, 'applications']);
+Router::get('/candidate/applications', [ApplicationController::class,'index']);
 Router::get('/candidate/profile', [CandidateController::class, 'profile']);
 Router::get('/candidate/saved-jobs', [CandidateController::class, 'savedJobs']);
 Router::get('/candidate/interviews', [CandidateController::class, 'interviews']);
