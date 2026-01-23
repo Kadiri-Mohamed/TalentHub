@@ -24,6 +24,10 @@ class RecruiterService
         $this->applicationRepository = new ApplicationRepository();
         $this->categorieRepository = new CategorieRepository();
     }
+    public function getAllRecruiters(): array
+    {
+        return $this->recruiterRepository->getAll();
+    }
 
     public function getRecruiterById(int $id): ?Recruiter
     {

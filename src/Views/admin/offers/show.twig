@@ -1,0 +1,257 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .offer-detail-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: white;
+        margin-bottom: 20px;
+    }
+    .detail-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .detail-body {
+        padding: 20px;
+    }
+    .info-item {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+    }
+    .info-value {
+        color: #212529;
+    }
+    .description-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/offers">Offers</a></li>
+            <li class="breadcrumb-item active">{{ offer.title|slice(0, 30) }}{% if offer.title|length > 30 %}...{% endif %}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Détails de l'offre d'emploi</p>
+        </div>
+        <div class="btn-group">
+            <a href="/admin/offers" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+            </a>
+            <a href="/admin/offers/{{ offer.id }}/edit" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Modifier
+            </a>
+            <a href="/admin/offers/{{ offer.id }}/applications" class="btn btn-info">
+                <i class="fas fa-paper-plane me-2"></i>Candidatures
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if session.success %}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            {{ session.success }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Left Column - Offer Details -->
+        <div class="col-md-8">
+            <div class="offer-detail-card">
+                <div class="detail-header">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h2 class="h4 mb-2">{{ offer.title }}</h2>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge bg-{% if offer.isArchived() %}secondary{% else %}success{% endif %}">
+                                    {% if offer.isArchived() %}Archivée{% else %}Active{% endif %}
+                                </span>
+                                <span class="badge bg-primary">{{ offer.jobType }}</span>
+                                <span class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ offer.location }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h5 text-danger mb-0">
+                                {{ offer.salaryMin|number_format(0, ',', ' ') }} - {{ offer.salaryMax|number_format(0, ',', ' ') }} €
+                            </div>
+                            <small class="text-muted">Salaire annuel</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-body">
+                    <!-- Recruiter Info -->
+                    <div class="info-item">
+                        <div class="info-label">Recruteur</div>
+                        <div class="info-value">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-3">
+                                    <div class="avatar-title bg-info-subtle text-info rounded-circle">
+                                        {{ offer.recruiter.companyName|slice(0, 1)|default('R')|upper }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ offer.recruiter.companyName|default(offer.recruiter.name) }}</div>
+                                    <div class="text-muted small">{{ offer.recruiter.name }} • {{ offer.recruiter.email }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Info -->
+                    <div class="info-item">
+                        <div class="info-label">Catégorie</div>
+                        <div class="info-value">
+                            <span class="badge bg-secondary">{{ offer.categorie.name }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="description-box">
+                        <h5 class="mb-3">Description du poste</h5>
+                        <div class="offer-description">
+                            {{ offer.description|nl2br }}
+                        </div>
+                    </div>
+                    
+                    <!-- Dates -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">Date de création</div>
+                                <div class="info-value">
+                                    {% if offer.createdAt %}
+                                        {{ offer.createdAt|date('d/m/Y H:i') }}
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">Dernière mise à jour</div>
+                                <div class="info-value">
+                                    {% if offer.updatedAt %}
+                                        {{ offer.updatedAt|date('d/m/Y H:i') }}
+                                    {% else %}
+                                        Non spécifié
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="/admin/offers/{{ offer.id }}/toggle-archive" 
+                               class="btn btn-outline-{% if offer.isArchived() %}success{% else %}secondary{% endif %}"
+                               onclick="return confirm('Êtes-vous sûr de vouloir {% if offer.isArchived() %}désarchiver{% else %}archiver{% endif %} cette offre ?')">
+                                <i class="fas fa-archive me-2"></i>
+                                {% if offer.isArchived() %}Désarchiver{% else %}Archiver{% endif %}
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/admin/offers/{{ offer.id }}/export" class="btn btn-outline-success me-2">
+                                <i class="fas fa-download me-2"></i>Exporter
+                            </a>
+                            <a href="/admin/offers/{{ offer.id }}/delete" 
+                               class="btn btn-danger"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ? Cette action est irréversible.')">
+                                <i class="fas fa-trash me-2"></i>Supprimer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Quick Actions & Stats -->
+        <div class="col-md-4">
+            <!-- Quick Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistiques</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="h4 mb-1 text-primary">{{ applications|length }}</div>
+                            <small class="text-muted">Candidatures</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="h4 mb-1 text-success">
+                                {% set pending_apps = applications|filter(a => a.status == 'pending')|length %}
+                                {{ pending_apps }}
+                            </div>
+                            <small class="text-muted">En attente</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="h4 mb-1 text-info">
+                                {% set reviewed_apps = applications|filter(a => a.status == 'reviewed')|length %}
+                                {{ reviewed_apps }}
+                            </div>
+                            <small class="text-muted">En revue</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="h4 mb-1 text-danger">
+                                {% set rejected_apps = applications|filter(a => a.status == 'rejected')|length %}
+                                {{ rejected_apps }}
+                            </div>
+                            <small class="text-muted">Rejetées</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Actions rapides</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/admin/offers/{{ offer.id }}/applications" class="btn btn-outline-info">
+                            <i class="fas fa-list me-2"></i>Voir toutes les candidatures
+                        </a>
+                        <a href="/admin/offers/create" class="btn btn-outline-primary">
+                            <i class="fas fa-copy me-2"></i>Dupliquer cette offre
+                        </a>
+                        <a href="/admin/offers/{{ offer.recruiter.id }}/recruiter" class="btn btn-outline-secondary">
+                            <i class="fas fa-user-tie me-2"></i>Voir le recruteur
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

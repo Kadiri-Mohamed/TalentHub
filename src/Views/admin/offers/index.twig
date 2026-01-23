@@ -1,0 +1,283 @@
+{% extends 'layouts/base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .offer-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: transform 0.2s;
+    }
+    .offer-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .offer-header {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+        background: #f8f9fa;
+    }
+    .offer-body {
+        padding: 15px;
+    }
+    .offer-footer {
+        padding: 10px 15px;
+        border-top: 1px solid #dee2e6;
+        background: #f8f9fa;
+    }
+    .badge-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-active { background: #198754; color: white; }
+    .badge-archived { background: #6c757d; color: white; }
+    .salary-range {
+        font-weight: 600;
+        color: #198754;
+    }
+    .stat-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #dc3545;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+            <p class="text-muted mb-0">Gestion des offers d'emploi</p>
+        </div>
+        <div>
+            <a href="/admin/offers/create" class="btn btn-danger">
+                <i class="fas fa-plus me-2"></i>Nouvelle offre
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if session.success %}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            {{ session.success }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+    
+    {% if session.error %}
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            {{ session.error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.offers|default(0) }}</div>
+                <div class="stat-label">offers totales</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                {% set active_offers = offers|filter(o => not o.isArchived())|length %}
+                <div class="stat-number">{{ active_offers }}</div>
+                <div class="stat-label">offers actives</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                {% set archived_offers = offers|filter(o => o.isArchived())|length %}
+                <div class="stat-number">{{ archived_offers }}</div>
+                <div class="stat-label">offers archivées</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.applications|default(0) }}</div>
+                <div class="stat-label">Candidatures</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/admin/offers/search" method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" 
+                           class="form-control" 
+                           name="search" 
+                           placeholder="Rechercher par titre ou description..."
+                           value="{{ search|default('') }}">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" name="status">
+                        <option value="all">Tous les statuts</option>
+                        <option value="active" {% if selected_status|default('') == 'active' %}selected{% endif %}>Actives</option>
+                        <option value="archived" {% if selected_status|default('') == 'archived' %}selected{% endif %}>Archivées</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" 
+                           class="form-control" 
+                           name="recruiter" 
+                           placeholder="Rechercher par recruteur..."
+                           value="{{ selected_recruiter|default('') }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Offers List -->
+    <div class="row">
+        {% if offers|length > 0 %}
+            {% for offer in offers %}
+            <div class="col-md-6">
+                <div class="offer-card">
+                    <div class="offer-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">{{ offer.title }}</h5>
+                                <small class="text-muted">#{{ offer.id }} • {{ offer.location }}</small>
+                            </div>
+                            <div>
+                                <span class="badge-status badge-{% if offer.isArchived() %}archived{% else %}active{% endif %}">
+                                    {% if offer.isArchived() %}Archivée{% else %}Active{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="offer-body">
+                        <p class="mb-3">{{ offer.description|slice(0, 150) }}{% if offer.description|length > 150 %}...{% endif %}</p>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Type</small>
+                                <strong>{{ offer.jobType }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Salaire</small>
+                                <span class="salary-range">
+                                    {{ offer.salaryMin|number_format(0, ',', ' ') }} - {{ offer.salaryMax|number_format(0, ',', ' ') }} €
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Recruteur</small>
+                                <strong>{{ offer.recruiter.companyName|default(offer.recruiter.name) }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Catégorie</small>
+                                <strong>{{ offer.categorie.name }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="offer-footer">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <a href="/admin/offers/{{ offer.id }}/applications" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-paper-plane me-1"></i> Candidatures
+                                </a>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/admin/offers/{{ offer.id }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/offers/{{ offer.id }}/edit" class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/admin/offers/{{ offer.id }}/toggle-archive" 
+                                   class="btn btn-sm btn-outline-secondary"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir {% if offer.isArchived() %}désarchiver{% else %}archiver{% endif %} cette offre ?')">
+                                    <i class="fas fa-archive"></i>
+                                </a>
+                                <a href="/admin/offers/{{ offer.id }}/delete" 
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Aucune offre trouvée</h5>
+                        <p class="text-muted mb-4">Commencez par créer votre première offre d'emploi</p>
+                        <a href="/admin/offers/create" class="btn btn-danger">
+                            <i class="fas fa-plus me-2"></i>Créer une offre
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if offers|length > 0 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">Précédent</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Suivant</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+{% endblock %}
