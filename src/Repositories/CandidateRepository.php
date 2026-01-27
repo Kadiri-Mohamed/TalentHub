@@ -256,45 +256,6 @@ class CandidateRepository extends BaseRepository
         return $candidates;
     }
 
-    public function hasCandidateProfile(int $userId): bool
-    {
-        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE user_id = :user_id";
-        $stmt = self::$db->prepare($sql);
-        $stmt->execute(['user_id' => $userId]);
-
-        return $stmt->fetchColumn() > 0;
-    }
-
-    public function getCandidateData(int $userId): ?array
-    {
-        $sql = "SELECT * FROM {$this->table} WHERE user_id = :user_id";
-        $stmt = self::$db->prepare($sql);
-        $stmt->execute(['user_id' => $userId]);
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
-    }
-
-    public function convertToCandidate(int $userId, array $candidateData = []): bool
-    {
-        $user = $this->userRepository->getById($userId);
-
-        if (!$user) {
-            return false;
-        }
-
-        if ($this->hasCandidateProfile($userId)) {
-            return false;
-        }
-
-        return $this->insert([
-            'user_id' => $userId,
-            'salary_min' => $candidateData['salary_min'] ?? 0,
-            'salary_max' => $candidateData['salary_max'] ?? 0,
-            'cv_path' => $candidateData['cv_path'] ?? ''
-        ]);
-    }
-
     public function getAllCandidateUsers(): array
     {
         $sql = "SELECT 

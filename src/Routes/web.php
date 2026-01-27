@@ -68,7 +68,6 @@ Router::get('/admin/users/{id}/edit', [UserController::class, 'edit']);
 Router::post('/admin/users/{id}/update', [UserController::class, 'update']);
 Router::get('/admin/users/{id}/delete', [UserController::class, 'delete']);
 Router::get('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
-Router::get('/admin/users/search', [UserController::class, 'search']);
 
 Router::get('/admin/offers', [OfferControllerr::class, 'index']);
 Router::get('/admin/offers/create', [OfferControllerr::class, 'create']);
@@ -79,6 +78,5 @@ Router::get('/admin/offers/{id}/edit', [OfferControllerr::class, 'edit']);
 Router::post('/admin/offers/{id}/update', [OfferControllerr::class, 'update']);
 Router::get('/admin/offers/{id}/delete', [OfferControllerr::class, 'delete']);
 Router::get('/admin/offers/{id}/toggle-archive', [OfferControllerr::class, 'toggleArchive']);
-Router::get('/admin/offers/search', [OfferControllerr::class, 'search']);
 
 Router::dispatch();

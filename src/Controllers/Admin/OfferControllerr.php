@@ -251,51 +251,6 @@ class OfferControllerr
         exit;
     }
 
-    public function search()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            header('Location: /admin/offers');
-            exit;
-        }
-        
-        $search = trim($_GET['search'] ?? '');
-        $status = trim($_GET['status'] ?? 'all');
-        
-        $offers = $this->adminService->getAllOffers();
-        
-        if (!empty($search) || $status !== 'all') {
-            $filteredOffers = array_filter($offers, function($offer) use ($search, $status) {
-                $matchesSearch = empty($search) || 
-                               stripos($offer->getTitle(), $search) !== false || 
-                               stripos($offer->getDescription(), $search) !== false ||
-                               stripos($offer->getRecruiter()->getCompanyName(), $search) !== false ||
-                               stripos($offer->getRecruiter()->getName(), $search) !== false;
-                
-                $matchesStatus = $status === 'all' || 
-                               ($status === 'active' && !$offer->isArchived()) ||
-                               ($status === 'archived' && $offer->isArchived());
-                
-                return $matchesSearch && $matchesStatus;
-            });
-            
-            $offers = array_values($filteredOffers);
-        }
-        
-        $stats = $this->adminService->getStats();
-        
-        Twig::display('admin/offers/index.twig', [
-            'title' => 'Résultats de recherche',
-            'offers' => $offers,
-            'stats' => $stats,
-            'search' => $search,
-            'selected_status' => $status,
-            'current_user' => [
-                'id' => Session::get('user_id'),
-                'name' => Session::get('user_name') ?? 'Admin',
-            ]
-        ]);
-    }
-
     public function applications($id)
     {
         $offer = $this->adminService->getOfferById((int) $id);
@@ -317,51 +272,5 @@ class OfferControllerr
                 'name' => Session::get('user_name') ?? 'Admin',
             ]
         ]);
-    }
-
-    public function export($id)
-    {
-        $offer = $this->adminService->getOfferById((int) $id);
-        
-        if (!$offer) {
-            Session::set('error', 'Offre non trouvée');
-            header('Location: /admin/offers');
-            exit;
-        }
-        
-        $applications = $this->offerService->getOfferApplications($offer->getId());
-        
-        $filename = 'candidatures-offre-' . $offer->getId() . '-' . date('Y-m-d') . '.csv';
-        
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        
-        $output = fopen('php://output', 'w');
-        
-        fputcsv($output, [
-            'ID',
-            'Candidat',
-            'Email',
-            'CV',
-            'Message',
-            'Statut',
-            'Date de candidature'
-        ]);
-        
-        foreach ($applications as $application) {
-            $candidate = $application->getCandidate();
-            fputcsv($output, [
-                $application->getId(),
-                $candidate->getName(),
-                $candidate->getEmail(),
-                $candidate->getCvPath() ?? 'Non fourni',
-                $application->getMessage(),
-                $application->getStatus(),
-                $application->getAppliedAt()->format('Y-m-d H:i:s')
-            ]);
-        }
-        
-        fclose($output);
-        exit;
     }
 }

@@ -56,22 +56,11 @@ class Router
 
             array_shift($matches);
 
-            if ($handler instanceof \Closure) {
-                call_user_func_array($handler, $matches);
-                return;
-            }
-
             if (is_array($handler) && count($handler) === 2) {
                 [$controllerClass, $action] = $handler;
                 $controller = new $controllerClass();
-                call_user_func_array([$controller, $action], $matches);
-                return;
-            }
-
-            if (is_string($handler) && strpos($handler, '@') !== false) {
-                [$controllerClass, $action] = explode('@', $handler);
-                $controller = new $controllerClass();
-                call_user_func_array([$controller, $action], $matches);
+                $controller->$action($matches);
+                // call_user_func_array([$controller, $action], $matches);
                 return;
             }
         }

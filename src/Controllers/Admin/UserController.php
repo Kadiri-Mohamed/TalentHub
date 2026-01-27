@@ -195,46 +195,4 @@ class UserController
         header('Location: /admin/users/' . $id . '/edit');
         exit;
     }
-
-    public function search()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            header('Location: /admin/users');
-            exit;
-        }
-        
-        $search = trim($_GET['search'] ?? '');
-        $role = trim($_GET['role'] ?? '');
-        
-        $users = $this->adminService->getAllUsers();
-        
-        if (!empty($search) || !empty($role)) {
-            $filteredUsers = array_filter($users, function($user) use ($search, $role) {
-                $matchesSearch = empty($search) || 
-                               stripos($user->getName(), $search) !== false || 
-                               stripos($user->getEmail(), $search) !== false;
-                
-                $matchesRole = empty($role) || 
-                              (strtolower($user->getRole()->getName()) === strtolower($role));
-                
-                return $matchesSearch && $matchesRole;
-            });
-            
-            $users = array_values($filteredUsers);
-        }
-        
-        $stats = $this->adminService->getStats();
-        
-        Twig::display('admin/users/index.twig', [
-            'title' => 'Résultats de recherche',
-            'users' => $users,
-            'stats' => $stats,
-            'search' => $search,
-            'selected_role' => $role,
-            'current_user' => [
-                'id' => Session::get('user_id'),
-                'name' => Session::get('user_name') ?? 'Admin',
-            ]
-        ]);
-    }
 }
