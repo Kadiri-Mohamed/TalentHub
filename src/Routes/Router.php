@@ -64,7 +64,7 @@ class Router
             if (is_array($handler) && count($handler) === 2) {
                 [$controllerClass, $action] = $handler;
                 $controller = new $controllerClass();
-                call_user_func_array([$controller, $action], $matches);
+                $controller->$action(...$matches);
                 return;
             }
         }
