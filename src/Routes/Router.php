@@ -56,6 +56,11 @@ class Router
 
             array_shift($matches);
 
+            if ($handler instanceof \Closure) {
+                call_user_func_array($handler, $matches);
+                return;
+            }
+
             if (is_array($handler) && count($handler) === 2) {
                 [$controllerClass, $action] = $handler;
                 $controller = new $controllerClass();
