@@ -44,7 +44,6 @@ Router::post('/candidate/offers/{id}/apply', [OfferControllerrr::class, 'apply']
 Router::get('/candidate/profile', [ProfileController::class, 'index']);
 Router::get('/candidate/profile/edit', [ProfileController::class, 'edit']);
 Router::post('/candidate/profile/update', [ProfileController::class, 'update']);
-Router::post('/candidate/profile/upload-cv', [ProfileController::class, 'uploadCv']);
 
 Router::get('/recruiter/dashboard', [RecruiterController::class, 'dashboard']);
 Router::get('/recruiter/job-postings', [RecruiterController::class, 'jobPostings']);

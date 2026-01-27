@@ -97,32 +97,4 @@ class ApplicationService
         
         return false;
     }
-
-    public function getApplicationStatus(int $candidateId, int $offerId): ?string
-    {
-        $application = $this->getByOffer($offerId, $candidateId);
-        return $application ? $application->getStatus() : null;
-    }
-
-    public function updateCvPath(int $applicationId, int $candidateId, string $cvPath): bool
-    {
-        $application = $this->getById($applicationId, $candidateId);
-        if (!$application) {
-            return false;
-        }
-
-        $application->setCvPath($cvPath);
-        return $this->applicationRepository->updateApplication($application);
-    }
-
-    public function updateCoverLetter(int $applicationId, int $candidateId, string $coverLetter): bool
-    {
-        $application = $this->getById($applicationId, $candidateId);
-        if (!$application) {
-            return false;
-        }
-
-        $application->setCoverLetter($coverLetter);
-        return $this->applicationRepository->updateApplication($application);
-    }
 }

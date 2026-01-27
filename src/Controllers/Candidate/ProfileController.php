@@ -56,19 +56,5 @@ class ProfileController
         exit;
     }
 
-    public function uploadCv()
-    {
-        $candidate = $this->candidateService->getCurrentCandidate();
-        if (!$candidate) {
-            header('Location: /candidate/profile');
-            exit;
-        }
-
-        if (isset($_FILES['cv']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
-            $this->candidateService->uploadCv($candidate->getId(), $_FILES['cv']);
-        }
-
-        header('Location: /candidate/profile');
-        exit;
-    }
+    
 }

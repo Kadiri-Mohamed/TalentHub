@@ -195,17 +195,5 @@ class RecruiterService
         return $this->recruiterRepository->findByEmail($email);
     }
 
-    public function searchOffers(int $recruiterId, string $keyword): array
-    {
-        $offers = $this->getRecruiterOffers($recruiterId);
 
-        if (empty($keyword)) {
-            return $offers;
-        }
-
-        return array_filter($offers, function ($offer) use ($keyword) {
-            return stripos($offer->getTitle(), $keyword) !== false ||
-                stripos($offer->getDescription(), $keyword) !== false;
-        });
-    }
 }

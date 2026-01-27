@@ -28,12 +28,6 @@ class OfferService
         return $this->offerRepository->getById($id);
     }
 
-    public function searchOffers(string $keyword): array
-    {
-        return $this->offerRepository->search($keyword);
-    }
-
-
     public function createOffer(Offer $offer): bool
     {
         return $this->offerRepository->createOffer($offer);

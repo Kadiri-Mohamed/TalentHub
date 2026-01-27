@@ -57,37 +57,6 @@ class CandidateService
         }
         return $this->candidateRepository->updateSalary($candidateId, $min, $max);
     }
-    public function uploadCv(int $idCandidat, array $fichier): array
-    {
-        $resultat = [
-            'success' => false,
-            'message' => ''
-        ];
-
-        if (empty($fichier)) {
-            $resultat['message'] = 'Aucun fichier fourni';
-            return $resultat;
-        }
-
-        $repertoireUpload = __DIR__ . '/../../public/uploads/cv/';
-        $nomFichier = $idCandidat . '.pdf';
-        $cheminFichier = $repertoireUpload . $nomFichier;
-
-        if (!file_exists($repertoireUpload)) {
-            mkdir($repertoireUpload, 0777, true);
-        }
-
-        if (move_uploaded_file($fichier['tmp_name'], $cheminFichier)) {
-            $cheminCv = '/uploads/cv/' . $nomFichier;
-            $this->candidateRepository->updateCvPath($idCandidat, $cheminCv);
-
-            $resultat['success'] = true;
-            $resultat['message'] = 'CV téléchargé avec succès';
-        }
-
-        return $resultat;
-    }
-
 
     public function getMyApplications(int $candidateId): array
     {
@@ -110,19 +79,5 @@ class CandidateService
         }
 
         return $stats;
-    }
-
-    public function getProfileCompletion(Candidate $candidate): int
-    {
-        $fields = [
-            $candidate->getName(),
-            $candidate->getEmail(),
-            $candidate->getCvPath(),
-            $candidate->getSalaryMin(),
-            $candidate->getSalaryMax()
-        ];
-
-        $completed = count(array_filter($fields));
-        return (int)(($completed / count($fields)) * 100);
     }
 }
